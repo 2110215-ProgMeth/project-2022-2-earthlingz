@@ -1,9 +1,34 @@
 package application;
 
-public class Main {
+import scene.SceneManager;
+import utils.Time;
+import input.InputManager;
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import render.RenderableManager;
+
+public class Main extends Application {
+
+	@Override
+	public void start(Stage primaryStage) {
+
+		SceneManager.initializeSceneManager(primaryStage);
+		Time.setStartTime(System.nanoTime());
+
+		AnimationTimer animation = new AnimationTimer() {
+			public void handle(long now) {
+				Time.setCurrentTime(now);
+				RenderableManager.getInstance().updateRenderableList();
+				InputManager.updateInputState();
+				SceneManager.getInstance().updateScene();
+			}
+		};
+		animation.start();
+	}
 
 	public static void main(String[] args) {
-		System.out.println("Game ended.");
+		Application.launch(args);
 	}
 
 }
