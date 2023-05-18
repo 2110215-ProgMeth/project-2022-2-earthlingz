@@ -3,6 +3,7 @@ package scene;
 import config.Config;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import render.RenderableManager;
 
 public class SceneManager {
 
@@ -13,7 +14,8 @@ public class SceneManager {
 	public SceneManager(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("EarthlingZ");
-		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
+//		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
+		this.currentScenePane = new GameplayScenePane(Config.screenWidth, Config.screenHeight);
 		Scene scene = new Scene(currentScenePane);
 		this.primaryStage.setScene(scene);
 		this.primaryStage.show();

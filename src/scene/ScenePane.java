@@ -13,7 +13,7 @@ import render.RenderableManager;
 
 public abstract class ScenePane extends StackPane {
 
-	private Canvas canvas;
+	protected Canvas canvas;
 
 	public ScenePane(double width, double height) {
 		this.setWidth(width);
@@ -22,6 +22,7 @@ public abstract class ScenePane extends StackPane {
 		this.getChildren().add(canvas);
 		this.setVisible(true);
 		this.addListerner();
+		this.requestFocus();
 	}
 
 	private void addListerner() {
@@ -69,12 +70,13 @@ public abstract class ScenePane extends StackPane {
 	public void renderComponent() {
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		gc.setFill(Color.BLACK);
+		gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		for (Renderable renderableObject : RenderableManager.getInstance().getRenderableList()) {
 			if (renderableObject.isVisible() && !renderableObject.isDestroyed()) {
 				renderableObject.render(gc);
 			}
 		}
 	}
-	
+
 	public abstract void updateScene();
 }

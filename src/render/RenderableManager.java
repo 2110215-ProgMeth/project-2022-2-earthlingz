@@ -24,6 +24,10 @@ public class RenderableManager {
 	public static RenderableManager getInstance() {
 		return instance;
 	}
+	
+	public void clear() {
+		renderableList.clear();
+	}
 
 	public void add(Renderable renderable) {
 		renderableList.add(renderable);

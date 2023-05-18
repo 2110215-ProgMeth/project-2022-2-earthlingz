@@ -2,7 +2,7 @@ package utils;
 
 public class CircleCollider2D extends Collider2D {
 
-	public Vector2D center;
+	private Vector2D center;
 	private double radius;
 
 	public CircleCollider2D(Vector2D center, double radius) {
@@ -24,6 +24,14 @@ public class CircleCollider2D extends Collider2D {
 			return new Vector2D(this.center, circle.center).getSize() <= this.getRadius() + circle.getRadius();
 		}
 		return false;
+	}
+
+	public Vector2D getCenter() {
+		return center;
+	}
+
+	public void setCenter(Vector2D center) {
+		this.center = center;
 	}
 
 	public double getRadius() {

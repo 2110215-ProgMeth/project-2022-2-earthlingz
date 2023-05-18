@@ -2,17 +2,17 @@ package utils;
 
 public class BoxCollider2D extends Collider2D {
 
-	public Vector2D ltPos;
-	public Vector2D rbPos;
+	private Vector2D ltPos;
+	private Vector2D rbPos;
 
 	public BoxCollider2D(Vector2D ltPos, Vector2D rbPos) {
 		this.ltPos = ltPos;
 		this.rbPos = rbPos;
 	}
 
-	public BoxCollider2D(Vector2D ltPos, double width, double height) {
-		this.ltPos = ltPos;
-		this.rbPos = Vector2D.add(ltPos, new Vector2D(width, height));
+	public BoxCollider2D(Vector2D centerPosition, double width, double height) {
+		this.ltPos = Vector2D.add(centerPosition, new Vector2D(-width/2, -height/2));
+		this.rbPos = Vector2D.add(centerPosition, new Vector2D(width/2, height/2));
 	}
 
 	public void translate(double deltaX, double deltaY) {
@@ -48,6 +48,22 @@ public class BoxCollider2D extends Collider2D {
 
 	public double getHeight() {
 		return rbPos.getY() - ltPos.getY();
+	}
+
+	public Vector2D getLtPos() {
+		return ltPos;
+	}
+
+	public void setLtPos(Vector2D ltPos) {
+		this.ltPos = ltPos;
+	}
+
+	public Vector2D getRbPos() {
+		return rbPos;
+	}
+
+	public void setRbPos(Vector2D rbPos) {
+		this.rbPos = rbPos;
 	}
 
 }

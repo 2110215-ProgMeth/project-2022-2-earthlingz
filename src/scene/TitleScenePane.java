@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import render.RenderableManager;
 import utils.Resource;
 
 public class TitleScenePane extends ScenePane {
@@ -35,8 +36,6 @@ public class TitleScenePane extends ScenePane {
 
 		this.getChildren().addAll(background, buttonPane);
 		
-		System.out.println(this.getWidth()+" "+this.getHeight());
-		
 		Resource.gameTitleTheme.play();
 
 	}
@@ -53,8 +52,9 @@ public class TitleScenePane extends ScenePane {
 	}
 
 	private void startGame() {
-		SceneManager.getInstance().changeScene(new GameplayScenePane(Config.screenWidth, Config.screenHeight));
 		Resource.gameTitleTheme.stop();
+		RenderableManager.getInstance().clear();
+		SceneManager.getInstance().changeScene(new GameplayScenePane(Config.screenWidth, Config.screenHeight));
 	}
 
 	private void initializeExitButton() {

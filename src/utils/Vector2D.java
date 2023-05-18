@@ -70,6 +70,11 @@ public class Vector2D {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "(" + this.x + ", " + this.y + ")";
+	}
+
 	public double getX() {
 		return x;
 	}

@@ -6,7 +6,7 @@ public class Time {
 	private static long currentTime;
 	private static long deltaTime;
 
-	public static double getCurrentTime() {
+	public static long getCurrentTime() {
 		return Time.currentTime;
 	}
 
@@ -15,8 +15,12 @@ public class Time {
 		Time.currentTime = newTime;
 	}
 
-	public static double getDeltaTime() {
+	public static long getDeltaTime() {
 		return Time.deltaTime;
+	}
+	
+	public static double getDeltaTimeSecond() {
+		return Time.deltaTime/100000000D;
 	}
 
 	public static void setStartTime(long startTime) {
