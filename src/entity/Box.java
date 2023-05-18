@@ -5,6 +5,9 @@ import utils.Vector2D;
 
 public class Box extends PhysicsEntity {
 
+	private double width;
+	private double height;
+	
 
 	public Box() {
 		super();

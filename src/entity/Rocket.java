@@ -7,22 +7,22 @@ import logic.Gravitatable;
 import utils.BoxCollider2D;
 import utils.Vector2D;
 
-public class Earthling extends PhysicsEntity implements Gravitatable {
+public class Rocket extends PhysicsEntity implements Gravitatable {
 
 	private boolean isGrounded;
 	private BoxCollider2D groundCollider;
 	private double speed;
 	private boolean isWalking;
 
-	public Earthling() {
+	public Rocket() {
 		super();
 	}
 
-	public Earthling(Vector2D position) {
+	public Rocket(Vector2D position) {
 		super(position);
 	}
 
-	public Earthling(Vector2D position, double mass, double speed) {
+	public Rocket(Vector2D position, double mass, double speed) {
 		super(position, mass);
 	}
 

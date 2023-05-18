@@ -12,7 +12,7 @@ import utils.Resource;
 
 public class GameplayScenePane extends ScenePane {
 
-	private GameplayManager logic;
+	private GameplayManager gameLogic;
 	private Text gameText;
 
 	public GameplayScenePane(double width, double height) {
@@ -26,7 +26,7 @@ public class GameplayScenePane extends ScenePane {
 		startButton.setOnAction(e -> this.backToTitle());
 		buttonPane.getChildren().add(startButton);
 		this.getChildren().addAll(new ImageView(Resource.gameTitleBackground),buttonPane);
-		this.logic = new GameplayManager();
+		this.gameLogic = new GameplayManager();
 		this.gameText = new Text("Gameplay");
 		this.gameText.setFont(new Font(35));
 		this.getChildren().addAll(this.gameText);
@@ -36,7 +36,7 @@ public class GameplayScenePane extends ScenePane {
 
 	@Override
 	public void updateScene() {
-		this.logic.logicUpdate();
+		this.gameLogic.updateGameplay();
 		this.renderComponent();
 	}
 	

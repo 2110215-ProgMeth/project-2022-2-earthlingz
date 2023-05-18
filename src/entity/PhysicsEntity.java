@@ -1,5 +1,7 @@
 package entity;
 
+import java.time.Duration;
+
 import utils.Collider2D;
 import utils.Time;
 import utils.Vector2D;
@@ -9,10 +11,12 @@ public abstract class PhysicsEntity extends Entity {
 	protected Collider2D collider;
 	protected double mass;
 	protected Vector2D velocity;
+	protected Vector2D additionVelocity;
 	protected Vector2D acceleration;
+	protected Vector2D additionAcceleration;
 	protected boolean isKinematic;
 	protected boolean bouncable;
-	
+
 	public PhysicsEntity() {
 		super();
 		this.velocity = new Vector2D();
@@ -21,7 +25,7 @@ public abstract class PhysicsEntity extends Entity {
 		this.bouncable = false;
 		this.mass = 1;
 	}
-	
+
 	public PhysicsEntity(Vector2D position) {
 		super(position);
 		this.velocity = new Vector2D();
@@ -30,8 +34,8 @@ public abstract class PhysicsEntity extends Entity {
 		this.bouncable = false;
 		this.mass = 1;
 	}
-	
-	public PhysicsEntity(Vector2D position,double mass) {
+
+	public PhysicsEntity(Vector2D position, double mass) {
 		super(position);
 		this.velocity = new Vector2D();
 		this.acceleration = new Vector2D();
@@ -41,7 +45,7 @@ public abstract class PhysicsEntity extends Entity {
 	}
 
 	public Vector2D calculateNewPosition() {
-		if(!isKinematic) {
+		if (!isKinematic) {
 			return this.getPosition();
 		}
 		double deltaTime = Time.getDeltaTime();
@@ -49,6 +53,24 @@ public abstract class PhysicsEntity extends Entity {
 		this.velocity.add(Vector2D.multiply(this.acceleration, deltaTime));
 		newPosition.add(Vector2D.multiply(this.velocity, deltaTime));
 		return newPosition;
+	}
+
+	public void addForce(Vector2D force, long durationMillisec) {
+		new Thread(() -> {
+			final Vector2D forceAcceleration = Vector2D.multiply(force, 1 / this.mass);
+			this.additionAcceleration.add(forceAcceleration);
+			try {
+				Thread.sleep(durationMillisec);
+			} catch (InterruptedException e) {
+				this.additionAcceleration.add(Vector2D.multiply(forceAcceleration,-1));
+				return;
+			}
+			this.additionAcceleration.add(Vector2D.multiply(forceAcceleration,-1));
+		}).start();
+	}
+	
+	public void addImpulse(Vector2D impulse) {
+			this.velocity.add(Vector2D.multiply(impulse, 1 / this.mass));
 	}
 
 	public boolean checkCollide(PhysicsEntity other) {
@@ -86,5 +108,37 @@ public abstract class PhysicsEntity extends Entity {
 	public void setBouncable(boolean bouncable) {
 		this.bouncable = bouncable;
 	}
-	
+
+	public Collider2D getCollider() {
+		return collider;
+	}
+
+	public void setCollider(Collider2D collider) {
+		this.collider = collider;
+	}
+
+	public double getMass() {
+		return mass;
+	}
+
+	public void setMass(double mass) {
+		this.mass = mass;
+	}
+
+	public Vector2D getAdditionVelocity() {
+		return additionVelocity;
+	}
+
+	public void setAdditionVelocity(Vector2D additionVelocity) {
+		this.additionVelocity = additionVelocity;
+	}
+
+	public Vector2D getAdditionAcceleration() {
+		return additionAcceleration;
+	}
+
+	public void setAdditionAcceleration(Vector2D additionAcceleration) {
+		this.additionAcceleration = additionAcceleration;
+	}
+
 }
