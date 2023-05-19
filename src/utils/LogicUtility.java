@@ -30,6 +30,40 @@ public class LogicUtility {
 		return cornerDistance <= circle.getRadius();
 	}
 
+	public static Vector2D calculatePositionFixer(Vector2D currentPosition, Vector2D deltaPosition, Collider2D collider,
+			Collider2D other) {
+		if (deltaPosition.getSize() < 1) {
+			return new Vector2D();
+		}
+		Vector2D fixedPosition = other.getCenter();
+		fixedPosition.add(calculateBackwardVector(currentPosition, deltaPosition, collider));
+		fixedPosition.add(calculateBackwardVector(currentPosition, deltaPosition, other));
+
+		Vector2D distance = new Vector2D(collider.getCenter(),other.getCenter());
+		if (Math.abs(distance.getY()) >= Math.abs(distance.getX())) {
+			fixedPosition.setX(currentPosition.getX());
+		} else {
+			fixedPosition.setY(currentPosition.getY());
+		}
+		return new Vector2D(currentPosition, fixedPosition);
+	}
+
+	private static Vector2D calculateBackwardVector(Vector2D currentPosition, Vector2D deltaPosition,
+			Collider2D collider) {
+		if (collider instanceof BoxCollider2D) {
+			BoxCollider2D box = (BoxCollider2D) collider;
+			return new Vector2D(-Math.signum(deltaPosition.getX()) * (box.getWidth() / 2),
+					-Math.signum(deltaPosition.getY()) * (box.getHeight() / 2));
+
+		}
+		if (collider instanceof CircleCollider2D) {
+			CircleCollider2D circle = (CircleCollider2D) collider;
+			return Vector2D.multiply(deltaPosition, -circle.getRadius() / deltaPosition.getSize());
+		} else {
+			return new Vector2D();
+		}
+	}
+
 	public static Image reColor(Image inputImage, Color sourceColor, Color finalColor) {
 		int W = (int) inputImage.getWidth();
 		int H = (int) inputImage.getHeight();

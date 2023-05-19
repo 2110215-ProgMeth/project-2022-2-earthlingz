@@ -20,6 +20,10 @@ public abstract class GameObject implements Renderable {
 		this.destroyed = false;
 		this.position = position;
 	}
+	
+	public void translate(Vector2D vector) {
+		this.position.add(vector);
+	}
 
 	@Override
 	public boolean isDestroyed() {

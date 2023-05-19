@@ -20,8 +20,8 @@ public class Main extends Application {
 			public void handle(long now) {
 				Time.setCurrentTime(now);
 				RenderableManager.getInstance().updateRenderableList();
-				InputManager.updateInputState();
 				SceneManager.getInstance().updateScene();
+				InputManager.updateInputState();
 			}
 		};
 		animation.start();

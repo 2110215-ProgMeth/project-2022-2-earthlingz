@@ -13,7 +13,12 @@ public class CircleCollider2D extends Collider2D {
 	public boolean containPoint(Vector2D point) {
 		return new Vector2D(this.center, point).getSize() <= this.getRadius();
 	}
-
+	
+	@Override
+	public void translate(Vector2D vector) {
+		this.center.add(vector);
+	}
+	
 	@Override
 	public boolean collideWith(Collider2D other) {
 		if (other instanceof BoxCollider2D) {
@@ -26,6 +31,7 @@ public class CircleCollider2D extends Collider2D {
 		return false;
 	}
 
+	@Override
 	public Vector2D getCenter() {
 		return center;
 	}

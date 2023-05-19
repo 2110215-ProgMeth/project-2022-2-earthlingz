@@ -25,6 +25,7 @@ public class Time {
 
 	public static void setStartTime(long startTime) {
 		Time.startTime = startTime;
+		Time.currentTime = startTime;
 	}
 
 	public static double getTimeSinceStart() {

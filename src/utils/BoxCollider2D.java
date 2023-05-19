@@ -11,8 +11,14 @@ public class BoxCollider2D extends Collider2D {
 	}
 
 	public BoxCollider2D(Vector2D centerPosition, double width, double height) {
-		this.ltPos = Vector2D.add(centerPosition, new Vector2D(-width/2, -height/2));
-		this.rbPos = Vector2D.add(centerPosition, new Vector2D(width/2, height/2));
+		this.ltPos = Vector2D.add(centerPosition, new Vector2D(-width / 2, -height / 2));
+		this.rbPos = Vector2D.add(centerPosition, new Vector2D(width / 2, height / 2));
+	}
+
+	@Override
+	public void translate(Vector2D vector) {
+		this.ltPos.add(vector);
+		this.rbPos.add(vector);
 	}
 
 	public void translate(double deltaX, double deltaY) {
@@ -38,8 +44,9 @@ public class BoxCollider2D extends Collider2D {
 		return false;
 	}
 
+	@Override
 	public Vector2D getCenter() {
-		return Vector2D.multiply(new Vector2D(this.ltPos, this.rbPos), 0.5);
+		return Vector2D.multiply(Vector2D.add(this.ltPos, this.rbPos), 0.5);
 	}
 
 	public double getWidth() {

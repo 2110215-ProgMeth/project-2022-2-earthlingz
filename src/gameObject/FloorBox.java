@@ -6,14 +6,14 @@ import utils.BoxCollider2D;
 import utils.Resource;
 import utils.Vector2D;
 
-public class Box extends PhysicsObject {
+public class FloorBox extends PhysicsObject {
 
 	private double width;
 	private double height;
 	private Image texture;
 	
 
-	public Box(Vector2D position) {
+	public FloorBox(Vector2D position) {
 		super(new BoxCollider2D(position, 64,64),position);
 		this.width = 64;
 		this.height = 64;
@@ -26,9 +26,5 @@ public class Box extends PhysicsObject {
 		gc.drawImage(texture, this.position.getX() - this.width / 2,
 				this.position.getY() - this.height / 2, this.width, this.height);
 	}
-
-	public void update() {
-	}
-
 
 }

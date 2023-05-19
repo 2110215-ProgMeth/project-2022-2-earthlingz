@@ -3,14 +3,12 @@ package gameObject;
 import input.InputManager;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import logic.Gravitatable;
 import utils.BoxCollider2D;
 import utils.CircleCollider2D;
 import utils.Vector2D;
 
-public class Rocket extends PhysicsObject implements Gravitatable {
+public class Rocket extends PhysicsObject {
 
-	private boolean isGrounded;
 	private double radius;
 
 	public Rocket(Vector2D position) {
@@ -29,11 +27,6 @@ public class Rocket extends PhysicsObject implements Gravitatable {
 
 	}
 
-	@Override
-	public void gravitate(double gravity) {
-		this.acceleration.add(new Vector2D(0, gravity));
-	}
-
 	public void update() {
 		if (InputManager.getKeyPressed(KeyCode.W)) {
 		}
@@ -47,14 +40,4 @@ public class Rocket extends PhysicsObject implements Gravitatable {
 			this.setPosition(new Vector2D(InputManager.mouseX, InputManager.mouseY));
 		}
 	}
-
-	@Override
-	public boolean isGrounded() {
-		return this.isGrounded;
-	}
-
-	public void setGrounded(boolean isGrounded) {
-		this.isGrounded = isGrounded;
-	}
-
 }
