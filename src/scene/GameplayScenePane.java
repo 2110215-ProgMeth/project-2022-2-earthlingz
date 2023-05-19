@@ -18,15 +18,15 @@ public class GameplayScenePane extends ScenePane {
 
 	public GameplayScenePane(double width, double height) {
 		super(width, height);
-		VBox buttonPane = new VBox();
-		buttonPane.setAlignment(Pos.CENTER);
-		buttonPane.setPrefWidth(500);
-		buttonPane.setSpacing(20);		
-		Button startButton = new Button("BACK TO TITLE");
-		startButton.setPrefWidth(300);
-		startButton.setOnAction(e -> this.backToTitle());
-		buttonPane.getChildren().add(startButton);
-		this.getChildren().add(buttonPane);
+//		VBox buttonPane = new VBox();
+//		buttonPane.setAlignment(Pos.CENTER);
+//		buttonPane.setPrefWidth(500);
+//		buttonPane.setSpacing(20);		
+//		Button startButton = new Button("BACK TO TITLE");
+//		startButton.setPrefWidth(300);
+//		startButton.setOnAction(e -> this.backToTitle());
+//		buttonPane.getChildren().add(startButton);
+//		this.getChildren().add(buttonPane);
 //		this.getChildren().addAll(new ImageView(Resource.gameTitleBackground),buttonPane);
 		this.gameText = new Text("Gameplay");
 		this.gameText.setFont(new Font(35));
@@ -38,7 +38,7 @@ public class GameplayScenePane extends ScenePane {
 
 	@Override
 	public void updateScene() {
-		this.gameLogic.updateGameplay();
+		this.gameLogic.updateLogic();
 		this.renderComponent();
 	}
 

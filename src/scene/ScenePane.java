@@ -22,6 +22,7 @@ public abstract class ScenePane extends StackPane {
 	public void renderComponent() {
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		gc.setFill(Color.BLACK);
+		gc.save();
 		for (Renderable renderableObject : RenderableManager.getInstance().getRenderableList()) {
 			if (renderableObject.isVisible() && !renderableObject.isDestroyed()) {
 				renderableObject.render(gc);

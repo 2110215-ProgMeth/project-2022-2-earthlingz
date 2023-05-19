@@ -23,6 +23,7 @@ public abstract class PhysicsObject extends GameObject {
 		super();
 		this.collider = collider;
 		this.velocity = new Vector2D();
+		this.decayableVelocity = new Vector2D();
 		this.acceleration = new Vector2D();
 		this.isKinematic = true;
 		this.bouncable = false;
@@ -33,6 +34,7 @@ public abstract class PhysicsObject extends GameObject {
 		super(position);
 		this.collider = collider;
 		this.velocity = new Vector2D();
+		this.decayableVelocity = new Vector2D();
 		this.acceleration = new Vector2D();
 		this.isKinematic = true;
 		this.bouncable = false;
@@ -43,6 +45,7 @@ public abstract class PhysicsObject extends GameObject {
 		super(position);
 		this.collider = collider;
 		this.velocity = new Vector2D();
+		this.decayableVelocity = new Vector2D();
 		this.acceleration = new Vector2D();
 		this.isKinematic = true;
 		this.bouncable = false;
@@ -54,11 +57,11 @@ public abstract class PhysicsObject extends GameObject {
 	}
 
 	public Vector2D calculateDeltaPosition() {
-		return Vector2D.multiply(this.velocity, Time.getDeltaTimeSecond());
+		return Vector2D.multiply(Vector2D.add(this.velocity, this.decayableVelocity), Time.getDeltaTimeSecond());
 	}
 
 	public void decayVelocity() {
-		this.decayableVelocity.multiply(1 / (Math.pow(1.1, mass)));
+		this.decayableVelocity.multiply(1 / (Math.pow(1.001, mass)));
 		if (this.decayableVelocity.getSize() < 1) {
 			this.decayableVelocity = new Vector2D();
 		}

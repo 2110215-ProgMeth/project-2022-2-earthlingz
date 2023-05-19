@@ -28,23 +28,21 @@ public class GameplayManager {
 
 		this.initializeGameplay();
 
+		System.out.println(this.physicsObjectContainer);
+	}
+
+	protected void initializeGameplay() {
 		this.addNewObject(new Background(Resource.background_space));
 
-		this.addNewObject(new Earthling(new Vector2D(), "amo", 10, 10, 30));
+		this.addNewObject(new Earthling(new Vector2D(), "amo", true));
 		this.addNewObject(new FloorBox(new Vector2D(0, 128)));
 
 		this.addNewObject(new FloorBox(new Vector2D(128, 512)));
 		this.addNewObject(new FloorBox(new Vector2D(192, 512)));
 
 		this.addNewObject(new FloorBox(new Vector2D(256, 512)));
+		this.addNewObject(new Earthling(new Vector2D(256, 256), "gus",false, 10, 10,30, 100));
 
-//		this.addNewObject(new Earthling(new Vector2D(256, 256), "gus", 10, 10));
-
-		System.out.println(this.physicsObjectContainer);
-	}
-
-	protected void initializeGameplay() {
-		return;
 	}
 
 	protected void addNewObject(GameObject gameObject) {
@@ -55,7 +53,7 @@ public class GameplayManager {
 		RenderableManager.getInstance().add(gameObject);
 	}
 
-	public void updateGameplay() {
+	public void updateLogic() {
 		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
 			if (physicsObject instanceof Earthling) {
 				Earthling earthling = (Earthling) physicsObject;
@@ -72,19 +70,19 @@ public class GameplayManager {
 			}
 			if (physicsObject.isKinematic()) {
 				physicsObject.gravitate(Config.gravity);
+				physicsObject.decayVelocity();
 //				System.out.println("p=" + physicsObject.getPosition());
 //				System.out.println("v=" + physicsObject.getVelocity());
 //				System.out.println("a=" + physicsObject.getAcceleration());
 				physicsObject.getVelocity().add(physicsObject.calculateDeltaVelocity());
-				Vector2D deltaPosition = physicsObject.calculateDeltaPosition();
-				physicsObject.translate(deltaPosition);
+				physicsObject.translate(physicsObject.calculateDeltaPosition());
 				for (PhysicsObject other : this.physicsObjectContainer) {
 					if (physicsObject == other) {
 						continue;
 					}
 					if (physicsObject.getCollider().collideWith(other.getCollider())) {
 						physicsObject.translate(LogicUtility.calculatePositionFixer(physicsObject.getPosition(),
-								deltaPosition, physicsObject.getCollider(), other.getCollider()));
+								physicsObject.getCollider(), other.getCollider()));
 					}
 				}
 			}

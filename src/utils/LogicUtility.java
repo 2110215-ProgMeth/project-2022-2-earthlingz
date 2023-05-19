@@ -30,8 +30,9 @@ public class LogicUtility {
 		return cornerDistance <= circle.getRadius();
 	}
 
-	public static Vector2D calculatePositionFixer(Vector2D currentPosition, Vector2D deltaPosition, Collider2D collider,
+	public static Vector2D calculatePositionFixer(Vector2D currentPosition, Collider2D collider,
 			Collider2D other) {
+		Vector2D deltaPosition = new Vector2D(collider.getCenter(),other.getCenter());
 		if (deltaPosition.getSize() < 1) {
 			return new Vector2D();
 		}
@@ -39,8 +40,7 @@ public class LogicUtility {
 		fixedPosition.add(calculateBackwardVector(currentPosition, deltaPosition, collider));
 		fixedPosition.add(calculateBackwardVector(currentPosition, deltaPosition, other));
 
-		Vector2D distance = new Vector2D(collider.getCenter(),other.getCenter());
-		if (Math.abs(distance.getY()) >= Math.abs(distance.getX())) {
+		if (Math.abs(deltaPosition.getY()) >= Math.abs(deltaPosition.getX())) {
 			fixedPosition.setX(currentPosition.getX());
 		} else {
 			fixedPosition.setY(currentPosition.getY());
@@ -58,7 +58,7 @@ public class LogicUtility {
 		}
 		if (collider instanceof CircleCollider2D) {
 			CircleCollider2D circle = (CircleCollider2D) collider;
-			return Vector2D.multiply(deltaPosition, -circle.getRadius() / deltaPosition.getSize());
+			return Vector2D.multiply(deltaPosition.getDirectionalVector(), -circle.getRadius());
 		} else {
 			return new Vector2D();
 		}

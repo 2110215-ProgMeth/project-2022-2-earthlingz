@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import utils.BoxCollider2D;
 import utils.CircleCollider2D;
+import utils.Resource;
 import utils.Vector2D;
 
 public class Rocket extends PhysicsObject {
@@ -20,24 +21,16 @@ public class Rocket extends PhysicsObject {
 		super(new CircleCollider2D(position, 16), position, mass);
 		this.radius = 16;
 	}
+	
+	public Rocket(Vector2D position, double mass, Vector2D velocity) {
+		super(new CircleCollider2D(position, 16), position, mass);
+		this.radius = 16;
+		this.velocity = velocity;
+	}
 
 	@Override
 	public void render(GraphicsContext gc) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void update() {
-		if (InputManager.getKeyPressed(KeyCode.W)) {
-		}
-		if (InputManager.getKeyPressed(KeyCode.A)) {
-
-		}
-		if (InputManager.getKeyPressed(KeyCode.D)) {
-			this.velocity.add(position);
-		}
-		if (InputManager.isLeftClickTriggered()) {
-			this.setPosition(new Vector2D(InputManager.mouseX, InputManager.mouseY));
-		}
+		gc.drawImage(Resource.rocket, this.position.getX() - this.radius / 2,
+				this.position.getY() - this.radius / 2, this.radius, this.radius);
 	}
 }

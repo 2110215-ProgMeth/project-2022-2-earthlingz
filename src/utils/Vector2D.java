@@ -54,6 +54,10 @@ public class Vector2D {
 	public double getSize() {
 		return Math.hypot(this.x, this.y);
 	}
+	
+	public Vector2D  getDirectionalVector() {
+		return Vector2D.multiply(this, 1/this.getSize());
+	}
 
 	public boolean equals(Object obj) {
 		if (this == obj)
