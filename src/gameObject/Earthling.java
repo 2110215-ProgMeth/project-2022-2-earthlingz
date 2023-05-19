@@ -7,9 +7,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import logic.GameplayManager;
 import rocket.NormalRocket;
-import scene.SceneManager;
 import utils.BoxCollider2D;
 import utils.Resource;
+import utils.Time;
 import utils.Vector2D;
 
 public class Earthling extends PhysicsObject {
@@ -22,7 +22,10 @@ public class Earthling extends PhysicsObject {
 	private BoxCollider2D groundCollider;
 	private double speed;
 	private double jumpPower;
-	private double firePower;
+	private double maxFirePower;
+	private boolean isCharging;
+	private double currentChargeRate;
+	private double chargeStartTime;
 	private boolean isWalking;
 	private boolean isJumping;
 
@@ -40,60 +43,34 @@ public class Earthling extends PhysicsObject {
 				Config.earthlingHitboxWidth - 2, 1);
 		this.speed = Config.earthlingSpeed;
 		this.jumpPower = Config.earthlingJumpPower;
-		this.firePower = Config.earthlingFirePower;
+		this.maxFirePower = Config.earthlingMaxFirePower;
 		this.isWalking = false;
 		this.isJumping = false;
 	}
 
-	public Earthling(Vector2D position, String name, boolean isPlayable) {
-		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
-				Config.earthlingMass);
-		this.z = 10;
+	public Earthling(Vector2D position, boolean isPlayable, String name) {
+		this(position,isPlayable);
 		this.name = name;
-		this.health = 100;
-		this.isPlayer = isPlayable;
-		this.width = Config.earthlingWidth;
-		this.height = Config.earthlingHeight;
-		this.groundCollider = new BoxCollider2D(
-				Vector2D.add(this.position, new Vector2D(0, Config.earthlingHeight / 2)),
-				Config.earthlingHitboxWidth - 2, 1);
-		this.speed = Config.earthlingSpeed;
-		this.jumpPower = Config.earthlingJumpPower;
-		this.firePower = Config.earthlingFirePower;
-		this.isWalking = false;
-		this.isJumping = false;
 	}
 
-	public Earthling(Vector2D position, String name, boolean isPlayable, double mass, double speed, double jumpPower,
-			double firePower) {
-		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position, mass);
-		this.z = 10;
-		this.name = name;
-		this.health = 100;
-		this.isPlayer = isPlayable;
-		this.width = 32;
-		this.height = 32;
-		this.groundCollider = new BoxCollider2D(
-				Vector2D.add(this.position, new Vector2D(0, Config.earthlingHeight / 2)),
-				Config.earthlingHitboxWidth - 2, 1);
+	public Earthling(Vector2D position, boolean isPlayable, String name, double mass, double speed, double jumpPower,
+			double maxFirePower) {
+		this(position,isPlayable,name);
+		this.mass = mass;
 		this.speed = speed;
 		this.jumpPower = jumpPower;
-		this.firePower = firePower;
-		this.isWalking = false;
-		this.isJumping = false;
+		this.maxFirePower = maxFirePower;
 	}
 
-	public void shootRocket() {
-//		this.triggerShootRocket = true;
+	public void shootRocket(double power) {
 		Vector2D mousePosition = new Vector2D(InputManager.mouseX, InputManager.mouseY);
 		Vector2D pointingDirection = new Vector2D(this.getPosition(), mousePosition).getDirectionalVector();
 		BoxCollider2D box = (BoxCollider2D) this.collider;
 		Vector2D startPosition = Vector2D.add(this.getPosition(),
 				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
-		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, this.firePower);
-
-		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
-//		earthling.setTriggerShootRocket(false);
+		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
+		Platform.runLater(() -> GameplayManager.getInstance()
+				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
 	}
 
 	public void recieveDamage(int damage) {
@@ -149,13 +126,31 @@ public class Earthling extends PhysicsObject {
 				}
 			}
 			this.isGrounded = false;
+//			if (InputManager.isLeftClickTriggered()) {
+//				this.shootRocket();
+////				this.setPosition(new Vector2D(InputManager.mouseX, InputManager.mouseY));
+////				this.acceleration = new Vector2D();
+////				this.velocity = new Vector2D();
+////				System.out.println("click" + new Vector2D(InputManager.mouseX, InputManager.mouseY));
+//			}
 			if (InputManager.isLeftClickTriggered()) {
-				this.shootRocket();
-//				this.setPosition(new Vector2D(InputManager.mouseX, InputManager.mouseY));
-//				this.acceleration = new Vector2D();
-//				this.velocity = new Vector2D();
-//				System.out.println("click" + new Vector2D(InputManager.mouseX, InputManager.mouseY));
+				this.chargeStartTime = Time.getCurrentTimeSecond();
+				this.isCharging = true;
 			}
+			if(this.isCharging) {
+				double totalChargeTime = Time.getCurrentTimeSecond() - this.chargeStartTime;
+				if (InputManager.isMouseLeftDown()) {
+					this.currentChargeRate = (Math.abs(Math.sin(totalChargeTime/(4*Math.PI)))*90+10);
+					System.out.println(this.currentChargeRate+"%");
+				} else if(totalChargeTime > 0.5){
+					System.out.println("yes");
+					this.shootRocket(currentChargeRate/100*this.maxFirePower);
+					this.isCharging = false;
+				} else {
+					this.isCharging = false;
+				}
+			}
+
 		} else {
 			this.velocity.setX(0);
 			this.isGrounded = false;
@@ -225,12 +220,11 @@ public class Earthling extends PhysicsObject {
 		this.jumpPower = jumpPower;
 	}
 
-	public double getFirePower() {
-		return firePower;
+	public double getMaxFirePower() {
+		return maxFirePower;
 	}
 
-	public void setFirePower(double firePower) {
-		this.firePower = firePower;
+	public void setMaxFirePower(double maxFirePower) {
+		this.maxFirePower = maxFirePower;
 	}
-
 }

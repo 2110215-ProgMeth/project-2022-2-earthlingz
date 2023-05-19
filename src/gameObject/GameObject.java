@@ -1,6 +1,5 @@
 package gameObject;
 
-import javafx.application.Platform;
 import render.Renderable;
 import utils.Vector2D;
 

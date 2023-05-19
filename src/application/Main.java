@@ -6,7 +6,6 @@ import input.InputManager;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import logic.GameplayManager;
 import render.RenderableManager;
 
 public class Main extends Application {

@@ -43,19 +43,13 @@ public class GameplayManager {
 	}
 
 	protected void initializeGameplay() {
-		
+
 		this.initializeMap(new SnowMap());
 
-		this.addNewObject(new Earthling(new Vector2D(), "amo", true));
-//		this.addNewObject(new FloorBox(new Vector2D(0, 128)));
-//
-//		this.addNewObject(new FloorBox(new Vector2D(128, 512)));
-//		this.addNewObject(new FloorBox(new Vector2D(192, 512)));
-//
-//		this.addNewObject(new FloorBox(new Vector2D(256, 512)));
-		
+		this.addNewObject(new Earthling(new Vector2D(), true, "amo"));
+
 		this.currentTurn = 0;
-//		this.addNewObject(new Earthling(new Vector2D(256, 256), "gus", false, 10, 10, 30, 100));
+		this.addNewObject(new Earthling(new Vector2D(256, 256), false, "gus", 10, 10, 30, 100));
 
 	}
 
@@ -66,13 +60,13 @@ public class GameplayManager {
 		}
 		RenderableManager.getInstance().add(gameObject);
 	}
-	
+
 	private void initializeMap(GameMap map) {
 		this.addNewObject(new Background(map.getBackgroundImage()));
 		for (int y = 0; y < GameMap.mapRow; y++) {
 			for (int x = 0; x < GameMap.mapCol; x++) {
-				if(map.getTerrain(x, y) == 1) {
-					this.addNewObject(new FloorBox(new Vector2D(x*32, y*32),map.getFloorBoxImage()));
+				if (map.getTerrain(x, y) == 1) {
+					this.addNewObject(new FloorBox(new Vector2D(x * 32, y * 32), map.getFloorBoxImage()));
 				}
 			}
 		}
@@ -80,10 +74,6 @@ public class GameplayManager {
 
 	public void updateLogic() {
 
-		
-		
-		
-		
 		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
 			this.processState(physicsObject);
 			this.processCollision(physicsObject);
@@ -100,7 +90,7 @@ public class GameplayManager {
 		}
 
 		this.updateContainer();
-		
+
 //		System.out.println(physicsObjectContainer);
 
 	}
@@ -110,7 +100,7 @@ public class GameplayManager {
 			Earthling earthling = (Earthling) physicsObject;
 			earthling.updateState();
 		}
-		
+
 		if (physicsObject instanceof ExplosionArea) {
 			ExplosionArea explosion = (ExplosionArea) physicsObject;
 			explosion.updateState();

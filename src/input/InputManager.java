@@ -39,6 +39,9 @@ public class InputManager {
 		return isLeftClickedLastTick;
 	}
 	
+	public static boolean isMouseLeftDown() {
+		return isMouseLeftDown;
+	}
 	public static void updateInputState(){
 		isLeftClickedLastTick = false;
 	}

@@ -1,9 +1,9 @@
 package gameObject;
 
+import config.Config;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import utils.BoxCollider2D;
-import utils.Resource;
 import utils.Vector2D;
 
 public class FloorBox extends PhysicsObject {
@@ -13,10 +13,10 @@ public class FloorBox extends PhysicsObject {
 	private Image texture;
 
 	public FloorBox(Vector2D position, Image texture) {
-		super(new BoxCollider2D(position, 32,32),position);
+		super(new BoxCollider2D(position, Config.floorBoxWidth,Config.floorBoxHeight),position);
 		this.z = -5;
-		this.width = 32;
-		this.height = 32;
+		this.width = Config.floorBoxWidth;
+		this.height = Config.floorBoxHeight;
 		this.isKinematic = false;
 		this.texture = texture;
 	}	

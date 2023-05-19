@@ -9,6 +9,10 @@ public class Time {
 	public static long getCurrentTime() {
 		return Time.currentTime;
 	}
+	
+	public static double getCurrentTimeSecond() {
+		return Time.currentTime/100000000D;
+	}
 
 	public static void setCurrentTime(long newTime) {
 		Time.deltaTime = newTime - Time.currentTime;

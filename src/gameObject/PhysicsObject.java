@@ -1,9 +1,5 @@
 package gameObject;
 
-import config.Config;
-import input.InputManager;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
 import utils.Collider2D;
 import utils.Time;
 import utils.Vector2D;
@@ -17,7 +13,6 @@ public abstract class PhysicsObject extends GameObject {
 	protected Vector2D acceleration;
 	protected boolean isKinematic;
 	protected boolean isGrounded;
-	protected boolean bouncable;
 
 	public PhysicsObject(Collider2D collider) {
 		super();
@@ -26,29 +21,16 @@ public abstract class PhysicsObject extends GameObject {
 		this.decayableVelocity = new Vector2D();
 		this.acceleration = new Vector2D();
 		this.isKinematic = true;
-		this.bouncable = false;
 		this.mass = 1;
 	}
 
 	public PhysicsObject(Collider2D collider, Vector2D position) {
-		super(position);
-		this.collider = collider;
-		this.velocity = new Vector2D();
-		this.decayableVelocity = new Vector2D();
-		this.acceleration = new Vector2D();
-		this.isKinematic = true;
-		this.bouncable = false;
-		this.mass = 1;
+		this(collider);
+		this.position = position;
 	}
 
 	public PhysicsObject(Collider2D collider, Vector2D position, double mass) {
-		super(position);
-		this.collider = collider;
-		this.velocity = new Vector2D();
-		this.decayableVelocity = new Vector2D();
-		this.acceleration = new Vector2D();
-		this.isKinematic = true;
-		this.bouncable = false;
+		this(collider, position);
 		this.mass = mass;
 	}
 
@@ -86,10 +68,28 @@ public abstract class PhysicsObject extends GameObject {
 	public boolean checkCollide(PhysicsObject other) {
 		return this.collider.collideWith(other.collider);
 	}
-	
+
 	@Override
 	public void setPosition(Vector2D position) {
 		this.translate(new Vector2D(this.position, position));
+	}
+	
+	// Getters and Setters
+
+	public Collider2D getCollider() {
+		return collider;
+	}
+
+	public void setCollider(Collider2D collider) {
+		this.collider = collider;
+	}
+
+	public double getMass() {
+		return mass;
+	}
+
+	public void setMass(double mass) {
+		this.mass = mass;
 	}
 
 	public Vector2D getVelocity() {
@@ -98,6 +98,14 @@ public abstract class PhysicsObject extends GameObject {
 
 	public void setVelocity(Vector2D velocity) {
 		this.velocity = velocity;
+	}
+
+	public Vector2D getDecayableVelocity() {
+		return decayableVelocity;
+	}
+
+	public void setDecayableVelocity(Vector2D decayableVelocity) {
+		this.decayableVelocity = decayableVelocity;
 	}
 
 	public Vector2D getAcceleration() {
@@ -117,43 +125,11 @@ public abstract class PhysicsObject extends GameObject {
 	}
 
 	public boolean isGrounded() {
-		return this.isGrounded;
+		return isGrounded;
 	}
 
 	public void setGrounded(boolean isGrounded) {
 		this.isGrounded = isGrounded;
 	}
-
-	public boolean isBouncable() {
-		return bouncable;
-	}
-
-	public void setBouncable(boolean bouncable) {
-		this.bouncable = bouncable;
-	}
-
-	public Collider2D getCollider() {
-		return collider;
-	}
-
-	public void setCollider(Collider2D collider) {
-		this.collider = collider;
-	}
-
-	public double getMass() {
-		return mass;
-	}
-
-	public void setMass(double mass) {
-		this.mass = mass;
-	}
-
-	@Override
-	public void render(GraphicsContext gc) {
-		// TODO Auto-generated method stub
-
-	}
-
-
 
 }
