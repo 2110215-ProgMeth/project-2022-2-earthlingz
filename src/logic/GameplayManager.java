@@ -9,18 +9,21 @@ import gameObject.Background;
 import gameObject.Earthling;
 import gameObject.GameObject;
 import gameObject.PhysicsObject;
-import javafx.scene.shape.Box;
+import javafx.application.Platform;
+import map.GameMap;
+import map.SnowMap;
 import render.RenderableManager;
-import utils.BoxCollider2D;
+import rocket.ExplosionArea;
+import rocket.Rocket;
 import utils.LogicUtility;
-import utils.Resource;
-import utils.Time;
 import utils.Vector2D;
 
 public class GameplayManager {
 
+	private static GameplayManager instance = null;
 	private List<GameObject> gameObjectContainer;
 	private List<PhysicsObject> physicsObjectContainer;
+	private int currentTurn;
 
 	public GameplayManager() {
 		this.gameObjectContainer = new ArrayList<GameObject>();
@@ -31,62 +34,167 @@ public class GameplayManager {
 		System.out.println(this.physicsObjectContainer);
 	}
 
+	public static void initializeGameplayManager() {
+		GameplayManager.instance = new GameplayManager();
+	}
+
+	public static GameplayManager getInstance() {
+		return instance;
+	}
+
 	protected void initializeGameplay() {
-		this.addNewObject(new Background(Resource.background_space));
+		
+		this.initializeMap(new SnowMap());
 
 		this.addNewObject(new Earthling(new Vector2D(), "amo", true));
-		this.addNewObject(new FloorBox(new Vector2D(0, 128)));
-
-		this.addNewObject(new FloorBox(new Vector2D(128, 512)));
-		this.addNewObject(new FloorBox(new Vector2D(192, 512)));
-
-		this.addNewObject(new FloorBox(new Vector2D(256, 512)));
-		this.addNewObject(new Earthling(new Vector2D(256, 256), "gus",false, 10, 10,30, 100));
+//		this.addNewObject(new FloorBox(new Vector2D(0, 128)));
+//
+//		this.addNewObject(new FloorBox(new Vector2D(128, 512)));
+//		this.addNewObject(new FloorBox(new Vector2D(192, 512)));
+//
+//		this.addNewObject(new FloorBox(new Vector2D(256, 512)));
+		
+		this.currentTurn = 0;
+//		this.addNewObject(new Earthling(new Vector2D(256, 256), "gus", false, 10, 10, 30, 100));
 
 	}
 
-	protected void addNewObject(GameObject gameObject) {
+	public void addNewObject(GameObject gameObject) {
 		this.gameObjectContainer.add(gameObject);
 		if (gameObject instanceof PhysicsObject) {
 			this.physicsObjectContainer.add((PhysicsObject) gameObject);
 		}
 		RenderableManager.getInstance().add(gameObject);
 	}
-
-	public void updateLogic() {
-		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
-			if (physicsObject instanceof Earthling) {
-				Earthling earthling = (Earthling) physicsObject;
-
-				earthling.updateState();
-				for (PhysicsObject po : this.physicsObjectContainer) {
-					if (earthling == po) {
-						continue;
-					}
-					if (earthling.getGroundCollider().collideWith(po.getCollider())) {
-						earthling.collideGround();
-					}
-				}
-			}
-			if (physicsObject.isKinematic()) {
-				physicsObject.gravitate(Config.gravity);
-				physicsObject.decayVelocity();
-//				System.out.println("p=" + physicsObject.getPosition());
-//				System.out.println("v=" + physicsObject.getVelocity());
-//				System.out.println("a=" + physicsObject.getAcceleration());
-				physicsObject.getVelocity().add(physicsObject.calculateDeltaVelocity());
-				physicsObject.translate(physicsObject.calculateDeltaPosition());
-				for (PhysicsObject other : this.physicsObjectContainer) {
-					if (physicsObject == other) {
-						continue;
-					}
-					if (physicsObject.getCollider().collideWith(other.getCollider())) {
-						physicsObject.translate(LogicUtility.calculatePositionFixer(physicsObject.getPosition(),
-								physicsObject.getCollider(), other.getCollider()));
-					}
+	
+	private void initializeMap(GameMap map) {
+		this.addNewObject(new Background(map.getBackgroundImage()));
+		for (int y = 0; y < GameMap.mapRow; y++) {
+			for (int x = 0; x < GameMap.mapCol; x++) {
+				if(map.getTerrain(x, y) == 1) {
+					this.addNewObject(new FloorBox(new Vector2D(x*32, y*32),map.getFloorBoxImage()));
 				}
 			}
 		}
+	}
 
+	public void updateLogic() {
+
+		
+		
+		
+		
+		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
+			this.processState(physicsObject);
+			this.processCollision(physicsObject);
+			if (physicsObject.isKinematic()) {
+				this.processPosition(physicsObject);
+			}
+		}
+//		if (InputManager.isLeftClickTriggered()) {
+//			this.addNewObject(new FloorBox(new Vector2D(0, 256)));
+//		}
+
+		for (GameObject gameObject : this.gameObjectContainer) {
+			this.processOutOfBound(gameObject);
+		}
+
+		this.updateContainer();
+		
+//		System.out.println(physicsObjectContainer);
+
+	}
+
+	private void processState(PhysicsObject physicsObject) {
+		if (physicsObject instanceof Earthling) {
+			Earthling earthling = (Earthling) physicsObject;
+			earthling.updateState();
+		}
+		
+		if (physicsObject instanceof ExplosionArea) {
+			ExplosionArea explosion = (ExplosionArea) physicsObject;
+			explosion.updateState();
+		}
+	}
+
+	private void processCollision(PhysicsObject physicsObject) {
+		for (PhysicsObject other : this.physicsObjectContainer) {
+			if (physicsObject.equals(other)) {
+				continue;
+			}
+			if (physicsObject instanceof Earthling) {
+				Earthling earthling = (Earthling) physicsObject;
+				if (other instanceof Rocket) {
+					continue;
+				}
+				if (earthling.getGroundCollider().collideWith(other.getCollider())) {
+					earthling.collideGround();
+				}
+			}
+
+			if (physicsObject instanceof Rocket) {
+				Rocket rocket = (Rocket) physicsObject;
+				if (other.equals(rocket.getOwner())) {
+					continue;
+				}
+				if (rocket.getCollider().collideWith(other.getCollider())) {
+					rocket.triggerCollide();
+					return;
+				}
+			}
+
+			if (physicsObject instanceof ExplosionArea) {
+				ExplosionArea explosion = (ExplosionArea) physicsObject;
+				if (physicsObject.getCollider().collideWith(other.getCollider())) {
+					explosion.explode(other);
+				}
+			}
+
+		}
+
+	}
+
+	private void processPosition(PhysicsObject physicsObject) {
+		physicsObject.gravitate(Config.gravity);
+		physicsObject.decayVelocity();
+		physicsObject.getVelocity().add(physicsObject.calculateDeltaVelocity());
+		physicsObject.translate(physicsObject.calculateDeltaPosition());
+		if (physicsObject instanceof Earthling) {
+			for (PhysicsObject other : this.physicsObjectContainer) {
+				if (physicsObject == other) {
+					continue;
+				}
+				if (other instanceof Rocket || other instanceof ExplosionArea) {
+					continue;
+				}
+				if (physicsObject.getCollider().collideWith(other.getCollider())) {
+					physicsObject.translate(LogicUtility.calculatePositionFixer(physicsObject.getPosition(),
+							physicsObject.getCollider(), other.getCollider()));
+				}
+			}
+		}
+	}
+
+	private void processOutOfBound(GameObject gameObject) {
+		Vector2D position = gameObject.getPosition();
+		double x = position.getX();
+		double y = position.getY();
+		double threshold = Config.outOfBoundThreshold;
+		if (x > Config.screenWidth + threshold || x < -threshold || y > Config.screenHeight + threshold
+				|| y < -Config.outOfBoundUpperThreshold) {
+			gameObject.setDestroyed(true);
+		}
+	}
+
+	private void updateContainer() {
+		for (GameObject gameObject : this.gameObjectContainer) {
+			if (gameObject.isDestroyed()) {
+				Platform.runLater(() -> this.gameObjectContainer.remove(gameObject));
+				System.out.println("remove" + gameObject.getClass());
+				if (gameObject instanceof PhysicsObject) {
+					Platform.runLater(() -> this.physicsObjectContainer.remove(gameObject));
+				}
+			}
+		}
 	}
 }

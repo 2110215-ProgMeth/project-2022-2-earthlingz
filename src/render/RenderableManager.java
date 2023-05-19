@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class RenderableManager {
-	
+
 	private static final RenderableManager instance = new RenderableManager();
 
 	private List<Renderable> renderableList;
@@ -24,7 +24,7 @@ public class RenderableManager {
 	public static RenderableManager getInstance() {
 		return instance;
 	}
-	
+
 	public void clear() {
 		renderableList.clear();
 	}
@@ -36,8 +36,9 @@ public class RenderableManager {
 
 	public void updateRenderableList() {
 		for (int i = renderableList.size() - 1; i >= 0; i--) {
-			if (renderableList.get(i).isDestroyed())
+			if (renderableList.get(i).isDestroyed()) {
 				renderableList.remove(i);
+			}
 		}
 	}
 

@@ -18,8 +18,8 @@ public class SceneManager {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("EarthlingZ");
 		this.primaryStage.setResizable(false);
-//		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
-		this.currentScenePane = new GameplayScenePane(Config.screenWidth, Config.screenHeight);
+		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
+//		this.currentScenePane = new GameplayScenePane(Config.screenWidth, Config.screenHeight);
 		Scene scene = new Scene(currentScenePane);
 		this.addListerner(scene);
 		this.primaryStage.setScene(scene);

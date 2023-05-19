@@ -1,5 +1,6 @@
 package gameObject;
 
+import javafx.application.Platform;
 import render.Renderable;
 import utils.Vector2D;
 
@@ -28,6 +29,10 @@ public abstract class GameObject implements Renderable {
 	@Override
 	public boolean isDestroyed() {
 		return destroyed;
+	}
+	
+	public void setDestroyed(boolean destroyed) {
+		this.destroyed = destroyed;
 	}
 
 	@Override

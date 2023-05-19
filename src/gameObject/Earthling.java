@@ -2,8 +2,12 @@ package gameObject;
 
 import config.Config;
 import input.InputManager;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
+import logic.GameplayManager;
+import rocket.NormalRocket;
+import scene.SceneManager;
 import utils.BoxCollider2D;
 import utils.Resource;
 import utils.Vector2D;
@@ -11,6 +15,7 @@ import utils.Vector2D;
 public class Earthling extends PhysicsObject {
 
 	private String name;
+	private int health;
 	private boolean isPlayer;
 	private double width;
 	private double height;
@@ -24,7 +29,9 @@ public class Earthling extends PhysicsObject {
 	public Earthling(Vector2D position, boolean isPlayable) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
 				Config.earthlingMass);
+		this.z = 10;
 		this.name = "Earthling";
+		this.health = 100;
 		this.isPlayer = isPlayable;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
@@ -41,7 +48,9 @@ public class Earthling extends PhysicsObject {
 	public Earthling(Vector2D position, String name, boolean isPlayable) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
 				Config.earthlingMass);
+		this.z = 10;
 		this.name = name;
+		this.health = 100;
 		this.isPlayer = isPlayable;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
@@ -58,7 +67,9 @@ public class Earthling extends PhysicsObject {
 	public Earthling(Vector2D position, String name, boolean isPlayable, double mass, double speed, double jumpPower,
 			double firePower) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position, mass);
+		this.z = 10;
 		this.name = name;
+		this.health = 100;
 		this.isPlayer = isPlayable;
 		this.width = 32;
 		this.height = 32;
@@ -73,7 +84,24 @@ public class Earthling extends PhysicsObject {
 	}
 
 	public void shootRocket() {
-		
+//		this.triggerShootRocket = true;
+		Vector2D mousePosition = new Vector2D(InputManager.mouseX, InputManager.mouseY);
+		Vector2D pointingDirection = new Vector2D(this.getPosition(), mousePosition).getDirectionalVector();
+		BoxCollider2D box = (BoxCollider2D) this.collider;
+		Vector2D startPosition = Vector2D.add(this.getPosition(),
+				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
+		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, this.firePower);
+
+		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
+//		earthling.setTriggerShootRocket(false);
+	}
+
+	public void recieveDamage(int damage) {
+		this.health -= damage;
+		System.out.println(this.health);
+		if (this.health <= 0) {
+			this.destroyed = true;
+		}
 	}
 
 	@Override
@@ -86,18 +114,19 @@ public class Earthling extends PhysicsObject {
 	@Override
 	public void render(GraphicsContext gc) {
 		gc.translate(this.position.getX(), this.position.getY());
-		
+
 		gc.drawImage(Resource.earthlingIdle, -this.width / 2, -this.height / 2, this.width, this.height);
-		
-	    // Calculate the angle between the object and the mouse position
-		if(this.isPlayer) {
-		    double angle = Math.atan2(InputManager.mouseY-this.position.getY(), InputManager.mouseX-this.position.getX());
-		    gc.rotate(Math.toDegrees(angle));
+
+		// Calculate the angle between the object and the mouse position
+		if (this.isPlayer) {
+			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
+					InputManager.mouseX - this.position.getX());
+			gc.rotate(Math.toDegrees(angle));
 			gc.drawImage(Resource.bazooka, -20, -10, 40, 20);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
-		
+
 		gc.translate(-this.position.getX(), -this.position.getY());
 
 	}
@@ -113,7 +142,7 @@ public class Earthling extends PhysicsObject {
 				this.velocity.setX(speed);
 				this.isWalking = true;
 			}
-			if (InputManager.getKeyPressed(KeyCode.W)) {
+			if (InputManager.getKeyPressed(KeyCode.SPACE)) {
 				if (this.isGrounded && !this.isJumping) {
 					this.velocity.setY(-jumpPower);
 					this.isJumping = true;
@@ -154,6 +183,14 @@ public class Earthling extends PhysicsObject {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
 	}
 
 	public boolean isPlayer() {

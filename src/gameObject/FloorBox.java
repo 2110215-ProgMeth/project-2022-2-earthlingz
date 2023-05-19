@@ -11,15 +11,15 @@ public class FloorBox extends PhysicsObject {
 	private double width;
 	private double height;
 	private Image texture;
-	
 
-	public FloorBox(Vector2D position) {
-		super(new BoxCollider2D(position, 64,64),position);
-		this.width = 64;
-		this.height = 64;
+	public FloorBox(Vector2D position, Image texture) {
+		super(new BoxCollider2D(position, 32,32),position);
+		this.z = -5;
+		this.width = 32;
+		this.height = 32;
 		this.isKinematic = false;
-		this.texture = Resource.floor_snow;
-	}
+		this.texture = texture;
+	}	
 
 	@Override
 	public void render(GraphicsContext gc) {
