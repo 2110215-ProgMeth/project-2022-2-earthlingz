@@ -33,7 +33,7 @@ public class Config {
 	public static final double floorBoxWidth = 32;
 	public static final double floorBoxHeight = 32;
 	
-	public static final double earthlingWidth = 48;
+	public static final double earthlingWidth = 36;
 	public static final double earthlingHeight = 48;
 	public static final double earthlingHitboxWidth = 48;
 	public static final double earthlingHitboxHeight = 48;
@@ -41,6 +41,9 @@ public class Config {
 	public static final double earthlingSpeed = 10;
 	public static final double earthlingJumpPower = 65;
 	public static final double earthlingMaxFirePower = 70;
+	
+	public static final double bazookaWidth = 60;
+	public static final double bazookaHeight = 25 ;
 	
 	public static final int normalRocketDamage = 30;
 	public static final int normalRocketRadius = 32;

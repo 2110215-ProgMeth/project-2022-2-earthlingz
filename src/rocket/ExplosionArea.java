@@ -59,10 +59,10 @@ public class ExplosionArea extends PhysicsObject {
 		Vector2D center = this.getCollider().getCenter();
 		if (this.type == ExplosionType.Circle) {
 			CircleCollider2D circle = (CircleCollider2D) this.collider;
-			gc.drawImage(Resource.circleExplosionArea, center.getX() - circle.getRadius() / 2, center.getY() - circle.getRadius() / 2, circle.getRadius(), circle.getRadius());
+			gc.drawImage(Resource.explosionArea_circle, center.getX() - circle.getRadius() / 2, center.getY() - circle.getRadius() / 2, circle.getRadius(), circle.getRadius());
 		} else if(this.type == ExplosionType.Rectangle) {
 			BoxCollider2D box = (BoxCollider2D ) this.collider;
-			gc.drawImage(Resource.rectangleExplosionArea, center.getX() - box.getWidth() / 2, center.getY() - box.getHeight()/ 2, box.getWidth(), box.getHeight());
+			gc.drawImage(Resource.explosionArea_rectangle, center.getX() - box.getWidth() / 2, center.getY() - box.getHeight()/ 2, box.getWidth(), box.getHeight());
 		}
 
 	}

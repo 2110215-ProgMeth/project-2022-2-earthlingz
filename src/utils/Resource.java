@@ -19,8 +19,10 @@ public class Resource {
 	public static Image floor_snow;
 	public static AudioClip sound_boxBreak;
 
-	public static Image earthlingIdle;
-	public static Image earthlingCorpse;
+	public static Image earthling_idle_red;
+	public static Image earthling_dead_red;
+	public static Image earthling_idle_green;
+	public static Image earthling_dead_green;
 	public static AudioClip sound_earthlingHurt;
 	public static AudioClip sound_earthlingDead;
 
@@ -30,29 +32,32 @@ public class Resource {
 	public static AudioClip sound_explosionVertical;
 	public static AudioClip sound_explosionPush;
 
-	public static Image circleExplosionArea;
-	public static Image rectangleExplosionArea;
+	public static Image explosionArea_circle;
+	public static Image explosionArea_rectangle;
 
 	static {
 		loadResource();
 	}
 
 	public static void loadResource() {
-		background_title = new Image(ClassLoader.getSystemResource("background/title.jpg").toString());
+		background_title = new Image(ClassLoader.getSystemResource("background/title.png").toString());
 		music_title = new AudioClip(ClassLoader.getSystemResource("music/title.mp3").toString());
 
 		background_space = new Image(ClassLoader.getSystemResource("background/space.png").toString());
 		background_ruin = new Image(ClassLoader.getSystemResource("background/ruin.png").toString());
 		background_ancient = new Image(ClassLoader.getSystemResource("background/ancient.png").toString());
+		
 		floor_snow = new Image(ClassLoader.getSystemResource("texture/floor_snow.png").toString());
 
-		earthlingIdle = new Image(ClassLoader.getSystemResource("sprite/idle.png").toString());
-		earthlingCorpse = new Image(ClassLoader.getSystemResource("sprite/dead_1.png").toString());
-		sprite_bazooka = new Image(ClassLoader.getSystemResource("entity/rectangle-32.png").toString());
+		earthling_idle_red = new Image(ClassLoader.getSystemResource("sprite/robot_red.png").toString());
+		earthling_dead_red = new Image(ClassLoader.getSystemResource("sprite/robot_red_dead.png").toString());
+		earthling_idle_green = new Image(ClassLoader.getSystemResource("sprite/robot_green.png").toString());
+		earthling_dead_green = new Image(ClassLoader.getSystemResource("sprite/robot_green_dead.png").toString());
+		sprite_bazooka = new Image(ClassLoader.getSystemResource("entity/bazooka.png").toString());
 
 		sprite_rocket = new Image(ClassLoader.getSystemResource("entity/rocket.png").toString());
 
-		circleExplosionArea = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
-		rectangleExplosionArea = new Image(ClassLoader.getSystemResource("entity/redrectangle.png").toString());
+		explosionArea_circle = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
+		explosionArea_rectangle = new Image(ClassLoader.getSystemResource("entity/redrectangle.png").toString());
 	}
 }

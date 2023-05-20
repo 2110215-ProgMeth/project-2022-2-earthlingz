@@ -43,6 +43,7 @@ public class TitleScenePane extends ScenePane {
 
 		ImageView background = new ImageView(Resource.background_title);
 //		background.setPreserveRatio(true);
+		background.setFitWidth(Config.screenWidth);
 		background.setFitHeight(Config.screenHeight);
 
 		this.getChildren().addAll(background, buttonPane);

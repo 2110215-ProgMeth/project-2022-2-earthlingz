@@ -4,6 +4,7 @@ import config.Config;
 import input.InputManager;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import logic.BoxCollider2D;
 import logic.GameplayManager;
@@ -21,6 +22,8 @@ public class Earthling extends PhysicsObject {
 	}
 
 	private int team;
+	private Image sprite_idle;
+	private Image sprite_dead;
 	private String name;
 	private int health;
 	private boolean isPlayer;
@@ -44,6 +47,13 @@ public class Earthling extends PhysicsObject {
 		this.name = "Earthling";
 		this.health = 100;
 		this.team = team;
+		if (team == 0) {
+			this.sprite_idle = Resource.earthling_idle_green;
+			this.sprite_dead = Resource.earthling_dead_green;
+		} else {
+			this.sprite_idle = Resource.earthling_idle_red;
+			this.sprite_dead = Resource.earthling_dead_red;
+		}
 		this.isPlayer = isPlayer;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
@@ -84,16 +94,18 @@ public class Earthling extends PhysicsObject {
 
 		gc.translate(this.position.getX(), this.position.getY());
 
-		gc.drawImage(Resource.earthlingIdle, direction * this.width / 2, -this.height / 2, -direction * this.width,
+		gc.drawImage(this.sprite_idle, direction * this.width / 2, -this.height / 2, -direction * this.width,
 				this.height);
 
 		// Calculate the angle between the object and the mouse position
 		if (this.isPlayer) {
+			double bazookaWidth = Config.bazookaWidth;
+			double bazookaHeight = Config.bazookaHeight;
 
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
 			gc.rotate(Math.toDegrees(angle));
-			gc.drawImage(Resource.sprite_bazooka, -30, -10, 60, 20);
+			gc.drawImage(Resource.sprite_bazooka, -bazookaWidth/2, -bazookaHeight/2, bazookaWidth, bazookaHeight);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
@@ -123,8 +135,7 @@ public class Earthling extends PhysicsObject {
 		System.out.println(this.team + " " + this.health);
 		if (this.health <= 0) {
 			this.destroyed = true;
-			Platform.runLater(() -> GameplayManager.getInstance()
-					.addNewObject(new Corpse(this)));
+			Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new Corpse(this, this.sprite_dead)));
 		}
 	}
 

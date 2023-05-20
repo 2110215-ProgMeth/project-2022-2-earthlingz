@@ -2,20 +2,23 @@ package gameObject;
 
 import config.Config;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import utils.Resource;
 import utils.Vector2D;
 
 public class Corpse extends PhysicsObject {
 
+	private Image sprite;
 	private double width;
 	private double height;
 	private boolean wasFacingRight;
 
-	public Corpse(Earthling earthling) {
+	public Corpse(Earthling earthling,Image sprite) {
 		super(earthling.getCollider(), earthling.getPosition());
 		this.z = 10;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
+		this.sprite = sprite;
 		this.wasFacingRight = earthling.isFacingRight();
 		this.velocity = new Vector2D(0, -Config.gravity*4);
 	}
@@ -32,7 +35,7 @@ public class Corpse extends PhysicsObject {
 
 		gc.translate(this.position.getX(), this.position.getY());
 
-		gc.drawImage(Resource.earthlingCorpse, direction * this.width / 2, -this.height / 2, -direction * this.width,
+		gc.drawImage(this.sprite, direction * this.width / 2, -this.height / 2, -direction * this.width,
 				this.height);
 
 		gc.translate(-this.position.getX(), -this.position.getY());
