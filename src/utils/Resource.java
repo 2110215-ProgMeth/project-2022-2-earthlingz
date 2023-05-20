@@ -45,7 +45,9 @@ public class Resource {
 	public static Image explosionArea_rectangle;
 
 	static {
+		System.out.println("START LOADING RESOURCE");
 		loadResource();
+		System.out.println("FINISHED LOADING RESOURCE");
 	}
 
 	public static void loadResource() {

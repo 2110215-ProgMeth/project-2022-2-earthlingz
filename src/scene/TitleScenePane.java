@@ -63,7 +63,7 @@ public class TitleScenePane extends ScenePane {
 	}
 
 	private void startGame() {
-		titleTheme.stop();
+		System.out.println("START NEW GAME");
 		titleTheme.stop();
 		RenderableManager.getInstance().clear();
 		SceneManager.getInstance().changeScene(new GameplayScenePane(Config.screenWidth, Config.screenHeight));
@@ -76,6 +76,7 @@ public class TitleScenePane extends ScenePane {
 	}
 
 	private void exitGame() {
+		System.out.println("EXIT GAME");
 		SceneManager.getInstance().closeGame();
 	}
 

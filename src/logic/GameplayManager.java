@@ -219,7 +219,6 @@ public class GameplayManager {
 			this.lastPlayerIndexes.set(this.currentTeam, 0);
 		}
 		this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(newPlayerIndex));
-		System.out.println(this.currentTeam + " " + newPlayerIndex);
 		
 		switch (this.currentPlayer.getRocketType()) {
 		case NormalRocket:

@@ -172,7 +172,6 @@ public class Earthling extends PhysicsObject {
 
 	public void recieveDamage(int damage) {
 		this.health -= damage;
-		System.out.println(this.team + " " + this.health);
 		if (this.health <= 0) {
 			this.destroy();
 		} else {
@@ -222,7 +221,6 @@ public class Earthling extends PhysicsObject {
 				this.chargeDuration += Time.getDeltaTimeSecond();
 				if (InputManager.isMouseLeftDown()) {
 					this.currentChargeRate = (Math.abs(Math.sin(this.chargeDuration / (4 * Math.PI))) * 90 + 10);
-					System.out.println(this.currentChargeRate + "%");
 				} else if (this.chargeDuration > 0.5) {
 					this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
 					this.isCharging = false;

@@ -172,6 +172,7 @@ public class GameplayScenePane extends ScenePane {
 	}
 
 	public void endGame() {
+		System.out.println("GAMEPLAY END");
 		this.getChildren().add(new GameEndPane(this, GameplayManager.getInstance().getCurrentTeam()));
 	}
 

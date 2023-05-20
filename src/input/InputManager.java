@@ -25,7 +25,7 @@ public class InputManager {
 		}else{
 			keyPressed.remove(keycode);
 		}
-		System.out.println(keyPressed);
+//		System.out.println(keyPressed);
 	}
 	
 	public static void mouseLeftDown(){
