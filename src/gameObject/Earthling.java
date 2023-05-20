@@ -5,9 +5,9 @@ import input.InputManager;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
+import logic.BoxCollider2D;
 import logic.GameplayManager;
 import rocket.NormalRocket;
-import utils.BoxCollider2D;
 import utils.Resource;
 import utils.Time;
 import utils.Vector2D;
@@ -49,36 +49,17 @@ public class Earthling extends PhysicsObject {
 	}
 
 	public Earthling(Vector2D position, boolean isPlayable, String name) {
-		this(position,isPlayable);
+		this(position, isPlayable);
 		this.name = name;
 	}
 
 	public Earthling(Vector2D position, boolean isPlayable, String name, double mass, double speed, double jumpPower,
 			double maxFirePower) {
-		this(position,isPlayable,name);
+		this(position, isPlayable, name);
 		this.mass = mass;
 		this.speed = speed;
 		this.jumpPower = jumpPower;
 		this.maxFirePower = maxFirePower;
-	}
-
-	public void shootRocket(double power) {
-		Vector2D mousePosition = new Vector2D(InputManager.mouseX, InputManager.mouseY);
-		Vector2D pointingDirection = new Vector2D(this.getPosition(), mousePosition).getDirectionalVector();
-		BoxCollider2D box = (BoxCollider2D) this.collider;
-		Vector2D startPosition = Vector2D.add(this.getPosition(),
-				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
-		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
-		Platform.runLater(() -> GameplayManager.getInstance()
-				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
-	}
-
-	public void recieveDamage(int damage) {
-		this.health -= damage;
-		System.out.println(this.health);
-		if (this.health <= 0) {
-			this.destroyed = true;
-		}
 	}
 
 	@Override
@@ -106,6 +87,25 @@ public class Earthling extends PhysicsObject {
 
 		gc.translate(-this.position.getX(), -this.position.getY());
 
+	}
+
+	public void shootRocket(double power) {
+		Vector2D mousePosition = new Vector2D(InputManager.mouseX, InputManager.mouseY);
+		Vector2D pointingDirection = new Vector2D(this.getPosition(), mousePosition).getDirectionalVector();
+		BoxCollider2D box = (BoxCollider2D) this.collider;
+		Vector2D startPosition = Vector2D.add(this.getPosition(),
+				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
+		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
+		Platform.runLater(() -> GameplayManager.getInstance()
+				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
+	}
+
+	public void recieveDamage(int damage) {
+		this.health -= damage;
+		System.out.println(this.health);
+		if (this.health <= 0) {
+			this.destroyed = true;
+		}
 	}
 
 	public void updateState() {
@@ -137,14 +137,13 @@ public class Earthling extends PhysicsObject {
 				this.chargeStartTime = Time.getCurrentTimeSecond();
 				this.isCharging = true;
 			}
-			if(this.isCharging) {
+			if (this.isCharging) {
 				double totalChargeTime = Time.getCurrentTimeSecond() - this.chargeStartTime;
 				if (InputManager.isMouseLeftDown()) {
-					this.currentChargeRate = (Math.abs(Math.sin(totalChargeTime/(4*Math.PI)))*90+10);
-					System.out.println(this.currentChargeRate+"%");
-				} else if(totalChargeTime > 0.5){
-					System.out.println("yes");
-					this.shootRocket(currentChargeRate/100*this.maxFirePower);
+					this.currentChargeRate = (Math.abs(Math.sin(totalChargeTime / (4 * Math.PI))) * 90 + 10);
+					System.out.println(this.currentChargeRate + "%");
+				} else if (totalChargeTime > 0.5) {
+					this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
 					this.isCharging = false;
 				} else {
 					this.isCharging = false;

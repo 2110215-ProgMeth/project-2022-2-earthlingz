@@ -15,17 +15,23 @@ import map.SnowMap;
 import render.RenderableManager;
 import rocket.ExplosionArea;
 import rocket.Rocket;
+import scene.GameplayScenePane;
 import utils.LogicUtility;
 import utils.Vector2D;
 
 public class GameplayManager {
 
 	private static GameplayManager instance = null;
+	private GameplayScenePane scene;
 	private List<GameObject> gameObjectContainer;
 	private List<PhysicsObject> physicsObjectContainer;
+	
 	private int currentTurn;
+	private int currentTeam;
 
-	public GameplayManager() {
+	public GameplayManager(GameplayScenePane scene) {
+		this.scene = scene;
+		
 		this.gameObjectContainer = new ArrayList<GameObject>();
 		this.physicsObjectContainer = new ArrayList<PhysicsObject>();
 
@@ -34,8 +40,8 @@ public class GameplayManager {
 		System.out.println(this.physicsObjectContainer);
 	}
 
-	public static void initializeGameplayManager() {
-		GameplayManager.instance = new GameplayManager();
+	public static void initializeGameplayManager(GameplayScenePane scene) {
+		GameplayManager.instance = new GameplayManager(scene);
 	}
 
 	public static GameplayManager getInstance() {
@@ -125,6 +131,9 @@ public class GameplayManager {
 			if (physicsObject instanceof Rocket) {
 				Rocket rocket = (Rocket) physicsObject;
 				if (other.equals(rocket.getOwner())) {
+					continue;
+				}				
+				if (other instanceof Rocket) {
 					continue;
 				}
 				if (rocket.getCollider().collideWith(other.getCollider())) {

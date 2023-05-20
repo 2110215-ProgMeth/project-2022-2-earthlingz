@@ -33,7 +33,7 @@ public class GameplayScenePane extends ScenePane {
 		this.getChildren().add(gameText);
 
 //		this.gameLogic = new GameplayManager();
-		GameplayManager.initializeGameplayManager();
+		GameplayManager.initializeGameplayManager(this);
 
 	}
 

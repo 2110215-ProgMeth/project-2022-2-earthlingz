@@ -1,6 +1,6 @@
 package gameObject;
 
-import utils.Collider2D;
+import logic.Collider2D;
 import utils.Time;
 import utils.Vector2D;
 
@@ -61,8 +61,12 @@ public abstract class PhysicsObject extends GameObject {
 		this.collider.translate(vector);
 	}
 
-	public void addImpulse(Vector2D impulse) {
-		this.velocity.add(Vector2D.multiply(impulse, 1 / this.mass));
+	public void addImpulse(Vector2D impulse, boolean decayable) {
+		if (decayable) {
+			this.decayableVelocity.add(Vector2D.multiply(impulse, 1 / this.mass));
+		} else {
+			this.velocity.add(Vector2D.multiply(impulse, 1 / this.mass));
+		}
 	}
 
 	public boolean checkCollide(PhysicsObject other) {
@@ -73,7 +77,7 @@ public abstract class PhysicsObject extends GameObject {
 	public void setPosition(Vector2D position) {
 		this.translate(new Vector2D(this.position, position));
 	}
-	
+
 	// Getters and Setters
 
 	public Collider2D getCollider() {

@@ -1,4 +1,7 @@
-package utils;
+package logic;
+
+import utils.LogicUtility;
+import utils.Vector2D;
 
 public class BoxCollider2D extends Collider2D {
 

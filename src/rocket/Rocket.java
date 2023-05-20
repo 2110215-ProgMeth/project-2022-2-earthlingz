@@ -5,8 +5,8 @@ import gameObject.PhysicsObject;
 import input.InputManager;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import utils.BoxCollider2D;
-import utils.CircleCollider2D;
+import logic.BoxCollider2D;
+import logic.CircleCollider2D;
 import utils.Resource;
 import utils.Vector2D;
 

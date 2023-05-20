@@ -6,15 +6,17 @@ import gameObject.FloorBox;
 import gameObject.PhysicsObject;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
+import logic.BoxCollider2D;
+import logic.CircleCollider2D;
 import logic.GameplayManager;
-import utils.BoxCollider2D;
-import utils.CircleCollider2D;
+import rocket.ExplosionArea.ExplosionType;
 import utils.Resource;
 import utils.Vector2D;
 
 public class NormalRocket extends Rocket {
 
 	private int damage;
+	private int pushPower;
 
 	public NormalRocket(Earthling owner, Vector2D position, Vector2D velocity) {
 		super(owner, position, velocity);
@@ -23,12 +25,14 @@ public class NormalRocket extends Rocket {
 		this.explosionRadius = 64;
 		this.velocity = velocity;
 		this.damage = Config.normalRocketDamage;
+		this.pushPower = 10;
 	}
 
 	@Override
 	public void triggerCollide() {
-		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new ExplosionArea(
-				new CircleCollider2D(this.getPosition(), this.explosionRadius), this.getPosition(), this.damage)));
+		Platform.runLater(() -> GameplayManager.getInstance()
+				.addNewObject(new ExplosionArea(new CircleCollider2D(this.getPosition(), this.explosionRadius),
+						ExplosionType.Circle, this.getPosition(), this.damage, this.pushPower)));
 		this.setDestroyed(true);
 	}
 

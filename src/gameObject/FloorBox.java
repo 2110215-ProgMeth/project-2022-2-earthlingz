@@ -3,7 +3,7 @@ package gameObject;
 import config.Config;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import utils.BoxCollider2D;
+import logic.BoxCollider2D;
 import utils.Vector2D;
 
 public class FloorBox extends PhysicsObject {

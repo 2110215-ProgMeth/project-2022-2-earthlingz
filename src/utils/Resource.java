@@ -17,6 +17,8 @@ public class Resource {
 
 	public static Image bazooka;
 	public static Image rocket;
+	public static Image circleExplosionArea;
+	public static Image rectangleExplosionArea;
 	
 	static {
 		loadResource();
@@ -24,14 +26,18 @@ public class Resource {
 	
 	public static void loadResource() {
 		gameTitleBackground = new Image(ClassLoader.getSystemResource("background/gameTitle.jpg").toString());
-		gameTitleTheme = new AudioClip(ClassLoader.getSystemResource("sound/gameTitle.mp3").toString());
+		gameTitleTheme = new AudioClip(ClassLoader.getSystemResource("music/title_theme.mp3").toString());
 		explosionSound = new AudioClip(ClassLoader.getSystemResource("sound/Explosion.wav").toString());
 
 		background_space = new Image(ClassLoader.getSystemResource("background/spaceBackground.png").toString());
 		floor_snow = new Image(ClassLoader.getSystemResource("texture/floor_snow.png").toString());
-		earthlingIdle = new Image(ClassLoader.getSystemResource("entity/black-circle.png").toString());
-//		earthlingIdle = new Image(ClassLoader.getSystemResource("sprite/idle.png").toString());
+//		earthlingIdle = new Image(ClassLoader.getSystemResource("entity/black-circle.png").toString());
+		earthlingIdle = new Image(ClassLoader.getSystemResource("sprite/idle.png").toString());
 		bazooka = new Image(ClassLoader.getSystemResource("entity/rectangle-32.png").toString());
+		
 		rocket = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
+		
+		circleExplosionArea= new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
+		rectangleExplosionArea= new Image(ClassLoader.getSystemResource("entity/redrectangle.png").toString());
 	}
 }
