@@ -28,7 +28,7 @@ public abstract class Rocket extends PhysicsObject {
 
 	@Override
 	public void render(GraphicsContext gc) {
-		gc.drawImage(Resource.rocket, this.position.getX() - this.radius / 2, this.position.getY() - this.radius / 2,
+		gc.drawImage(Resource.sprite_rocket, this.position.getX() - this.radius / 2, this.position.getY() - this.radius / 2,
 				this.radius, this.radius);
 	}
 

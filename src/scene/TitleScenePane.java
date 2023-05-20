@@ -41,7 +41,7 @@ public class TitleScenePane extends ScenePane {
 		this.initializeExitButton();
 		buttonPane.getChildren().addAll(gameTitleText, startButton, exitButton);
 
-		ImageView background = new ImageView(Resource.gameTitleBackground);
+		ImageView background = new ImageView(Resource.background_title);
 //		background.setPreserveRatio(true);
 		background.setFitHeight(Config.screenHeight);
 
@@ -81,7 +81,7 @@ public class TitleScenePane extends ScenePane {
 	}
 
 	private void startGame() {
-		Resource.gameTitleTheme.stop();
+		Resource.music_title.stop();
 		theme.stop();
 		RenderableManager.getInstance().clear();
 		SceneManager.getInstance().changeScene(new GameplayScenePane(Config.screenWidth, Config.screenHeight));

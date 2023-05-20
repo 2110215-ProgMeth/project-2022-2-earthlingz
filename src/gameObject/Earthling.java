@@ -93,7 +93,7 @@ public class Earthling extends PhysicsObject {
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
 			gc.rotate(Math.toDegrees(angle));
-			gc.drawImage(Resource.bazooka, -30, -10, 60, 20);
+			gc.drawImage(Resource.sprite_bazooka, -30, -10, 60, 20);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
