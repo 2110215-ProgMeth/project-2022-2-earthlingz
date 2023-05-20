@@ -5,12 +5,15 @@ import javafx.scene.media.AudioClip;
 
 public class Resource {
 
+	// Title Scene
 	public static Image gameTitleBackground;
-	
 	public static AudioClip  gameTitleTheme;
-	public static AudioClip  explosionSound;
+	
+	// Title Scene
+	public static AudioClip  normalRocketExplosionSound;
 
 	public static Image background_space;
+	public static Image background_ruin;
 	public static Image floor_snow;
 	
 	public static Image earthlingIdle;
@@ -28,9 +31,10 @@ public class Resource {
 	public static void loadResource() {
 		gameTitleBackground = new Image(ClassLoader.getSystemResource("background/gameTitle.jpg").toString());
 		gameTitleTheme = new AudioClip(ClassLoader.getSystemResource("music/title_theme.mp3").toString());
-		explosionSound = new AudioClip(ClassLoader.getSystemResource("sound/Explosion.wav").toString());
+		normalRocketExplosionSound = new AudioClip(ClassLoader.getSystemResource("sound/Explosion.wav").toString());
 
 		background_space = new Image(ClassLoader.getSystemResource("background/spaceBackground.png").toString());
+		background_ruin = new Image(ClassLoader.getSystemResource("background/ruinBackground.png").toString());
 		floor_snow = new Image(ClassLoader.getSystemResource("texture/floor_snow.png").toString());
 //		earthlingIdle = new Image(ClassLoader.getSystemResource("entity/black-circle.png").toString());
 		earthlingIdle = new Image(ClassLoader.getSystemResource("sprite/idle.png").toString());

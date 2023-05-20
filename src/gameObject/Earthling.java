@@ -37,7 +37,7 @@ public class Earthling extends PhysicsObject {
 	private boolean isWalking;
 	private boolean isJumping;
 
-	public Earthling(Vector2D position, int team, boolean isPlayable) {
+	public Earthling(Vector2D position, int team, boolean isPlayer) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
 				Config.earthlingMass);
 		this.z = 10;
@@ -57,14 +57,14 @@ public class Earthling extends PhysicsObject {
 		this.isJumping = false;
 	}
 
-	public Earthling(Vector2D position, int team, boolean isPlayable, String name) {
-		this(position, team, isPlayable);
+	public Earthling(Vector2D position, int team, boolean isPlayer, String name) {
+		this(position, team, isPlayer);
 		this.name = name;
 	}
 
-	public Earthling(Vector2D position, int team, boolean isPlayable, String name, double mass, double speed,
+	public Earthling(Vector2D position, int team, boolean isPlayer, String name, double mass, double speed,
 			double jumpPower, double maxFirePower) {
-		this(position, team, isPlayable, name);
+		this(position, team, isPlayer, name);
 		this.mass = mass;
 		this.speed = speed;
 		this.jumpPower = jumpPower;
@@ -115,6 +115,7 @@ public class Earthling extends PhysicsObject {
 //				.addNewObject(new VerticalRocket(this, startPosition, rocketVelocity)));
 //		Platform.runLater(() -> GameplayManager.getInstance()
 //		.addNewObject(new PushRocket(this, startPosition, rocketVelocity)));
+		GameplayManager.getInstance().endTurn();
 	}
 
 	public void recieveDamage(int damage) {

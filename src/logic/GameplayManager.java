@@ -24,13 +24,14 @@ public class GameplayManager {
 	private GameplayScenePane scene;
 	private List<GameObject> gameObjectContainer;
 	private List<PhysicsObject> physicsObjectContainer;
-	
+
 	private int teamCount;
 	private int currentTeam;
 	private int turnCount;
 	private int currentTurn;
 	private boolean endTurn;
 	private List<ArrayList<Earthling>> teamMembersContainer;
+	private List<Integer> lastPlayerIndexes;
 	private Earthling currentPlayer;
 
 	public GameplayManager(GameplayScenePane scene) {
@@ -54,16 +55,18 @@ public class GameplayManager {
 		this.currentTurn = 0;
 		this.teamCount = Config.teamAmount;
 		this.currentTeam = 0;
-		
+
 		this.teamMembersContainer = new ArrayList<ArrayList<Earthling>>();
+		this.lastPlayerIndexes = new ArrayList<Integer>();
 		for (int i = 0; i < teamCount; i++) {
 			this.teamMembersContainer.add(new ArrayList<Earthling>());
+			this.lastPlayerIndexes.add(0);
 		}
 
 		this.initializeMap(Config.selectedMap);
-		
-		this.teamMembersContainer.get(this.currentTeam).get(0).setPlayer(true);
-		
+
+		this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(0));
+
 		System.out.println(this.teamMembersContainer);
 
 //		this.addNewObject(new Earthling(new Vector2D(), true, "amo"));
@@ -88,6 +91,11 @@ public class GameplayManager {
 		}
 	}
 
+	private void setCurrentPlayer(Earthling earthling) {
+		earthling.setPlayer(true);
+		this.currentPlayer = earthling;
+	}
+
 	public void addNewObject(GameObject gameObject) {
 		this.gameObjectContainer.add(gameObject);
 		if (gameObject instanceof PhysicsObject) {
@@ -107,9 +115,6 @@ public class GameplayManager {
 				this.processPosition(physicsObject);
 			}
 		}
-//		if (InputManager.isLeftClickTriggered()) {
-//			this.addNewObject(new FloorBox(new Vector2D(0, 256)));
-//		}
 
 		for (GameObject gameObject : this.gameObjectContainer) {
 			this.processOutOfBound(gameObject);
@@ -119,9 +124,38 @@ public class GameplayManager {
 
 	private void processTurn() {
 		if (this.endTurn) {
-			this.currentTeam = (currentTeam + 1) % teamCount;
+			this.currentPlayer.setPlayer(false);
+			this.lastPlayerIndexes.set(this.currentTeam, this.lastPlayerIndexes.get(this.currentTeam) + 1);
+			do {
+				this.currentTeam = (currentTeam + 1) % teamCount;
+			} while (this.teamMembersContainer.get(this.currentTeam).size() == 0);
+			int newPlayerIndex = this.lastPlayerIndexes.get(currentTeam);
+			if (newPlayerIndex >= this.teamMembersContainer.get(this.currentTeam).size()) {
+				newPlayerIndex = 0;
+				this.lastPlayerIndexes.set(this.currentTeam, 0);
+			}
+			this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(newPlayerIndex));
+			this.endTurn = false;
 		}
-//		if(this.
+		int remainingTeamCount = 0;
+		for (ArrayList<Earthling> team : this.teamMembersContainer) {
+			if (team.size() > 0) {
+				remainingTeamCount += 1;
+			}
+		}
+		if (remainingTeamCount <= 1) {
+			this.endGame();
+			System.out.println("END");
+		}
+
+	}
+
+	public void endTurn() {
+		this.endTurn = true;
+	}
+
+	private void endGame() {
+		this.scene.endGame();
 	}
 
 	private void processState(PhysicsObject physicsObject) {
@@ -214,6 +248,13 @@ public class GameplayManager {
 				System.out.println("remove" + gameObject.getClass());
 				if (gameObject instanceof PhysicsObject) {
 					Platform.runLater(() -> this.physicsObjectContainer.remove(gameObject));
+				}
+			}
+		}
+		for (ArrayList<Earthling> team : this.teamMembersContainer) {
+			for (Earthling earthling : team) {
+				if(earthling.isDestroyed()) {
+					Platform.runLater(() -> team.remove(earthling));
 				}
 			}
 		}

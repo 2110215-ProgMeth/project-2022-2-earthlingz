@@ -63,7 +63,7 @@ public class SnowMap extends GameMap {
 				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 						1, 1, 1, 1, 1, 1, 1, 1 }, };
 
-		this.backgroundImage = Resource.background_space;
+		this.backgroundImage = Resource.background_ruin;
 		this.floorBoxImage = Resource.floor_snow;
 	}
 

@@ -92,6 +92,10 @@ public class GameplayScenePane extends ScenePane {
 //		gameplayHUD.getChildren().addAll(ammoBox, healhtPotionBox, statusPane, towerUI);
 	}
 	
+	public void endGame() {
+		this.gameText.setText("GAME END");
+	}
+	
 	@Override
 	public void updateScene() {
 		this.renderComponent();
