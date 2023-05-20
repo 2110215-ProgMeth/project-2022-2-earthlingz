@@ -18,8 +18,8 @@ public class ButtonTemplate extends Button {
 				+ "-fx-text-fill: #ffffff;"
 				+ "-fx-padding: 12 16;";
 		this.setStyle(style);
-		this.prefWidth(width);
-		this.prefHeight(height);
+		this.setMaxWidth(width);
+		this.setMaxHeight(height);
 		this.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, fontSize));
 	}
 	

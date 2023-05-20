@@ -43,8 +43,8 @@ public abstract class PhysicsObject extends GameObject {
 	}
 
 	public void decayVelocity() {
-		this.decayableVelocity.multiply(1 / (Math.pow(1.001, mass)));
-		if (this.decayableVelocity.getSize() < 1) {
+		this.decayableVelocity.multiply(1 / (Math.pow(1.005, mass)));
+		if (this.decayableVelocity.getSize() < 3) {
 			this.decayableVelocity = new Vector2D();
 		}
 	}

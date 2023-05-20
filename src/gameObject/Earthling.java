@@ -8,12 +8,15 @@ import javafx.scene.input.KeyCode;
 import logic.BoxCollider2D;
 import logic.GameplayManager;
 import rocket.NormalRocket;
+import rocket.PushRocket;
+import rocket.VerticalRocket;
 import utils.Resource;
 import utils.Time;
 import utils.Vector2D;
 
 public class Earthling extends PhysicsObject {
 
+	private int team;
 	private String name;
 	private int health;
 	private boolean isPlayer;
@@ -26,6 +29,7 @@ public class Earthling extends PhysicsObject {
 	private boolean isCharging;
 	private double currentChargeRate;
 	private double chargeStartTime;
+	private boolean isFacingRight;
 	private boolean isWalking;
 	private boolean isJumping;
 
@@ -44,7 +48,7 @@ public class Earthling extends PhysicsObject {
 		this.speed = Config.earthlingSpeed;
 		this.jumpPower = Config.earthlingJumpPower;
 		this.maxFirePower = Config.earthlingMaxFirePower;
-		this.isWalking = false;
+		this.isFacingRight = true;
 		this.isJumping = false;
 	}
 
@@ -71,16 +75,19 @@ public class Earthling extends PhysicsObject {
 
 	@Override
 	public void render(GraphicsContext gc) {
+		int direction  = (this.isFacingRight ? -1 : 1);
+		
 		gc.translate(this.position.getX(), this.position.getY());
 
-		gc.drawImage(Resource.earthlingIdle, -this.width / 2, -this.height / 2, this.width, this.height);
+		gc.drawImage(Resource.earthlingIdle, direction*this.width / 2, -this.height / 2, -direction*this.width, this.height);
 
 		// Calculate the angle between the object and the mouse position
 		if (this.isPlayer) {
+			
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
 			gc.rotate(Math.toDegrees(angle));
-			gc.drawImage(Resource.bazooka, -20, -10, 40, 20);
+			gc.drawImage(Resource.bazooka, -30, -10, 60, 20);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
@@ -96,8 +103,12 @@ public class Earthling extends PhysicsObject {
 		Vector2D startPosition = Vector2D.add(this.getPosition(),
 				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
 		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
+//		Platform.runLater(() -> GameplayManager.getInstance()
+//				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
 		Platform.runLater(() -> GameplayManager.getInstance()
-				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
+		.addNewObject(new VerticalRocket(this, startPosition, rocketVelocity)));
+//		Platform.runLater(() -> GameplayManager.getInstance()
+//		.addNewObject(new PushRocket(this, startPosition, rocketVelocity)));
 	}
 
 	public void recieveDamage(int damage) {
@@ -115,9 +126,11 @@ public class Earthling extends PhysicsObject {
 			if (InputManager.getKeyPressed(KeyCode.A)) {
 				this.velocity.setX(-speed);
 				this.isWalking = true;
+				this.isFacingRight = false;
 			} else if (InputManager.getKeyPressed(KeyCode.D)) {
 				this.velocity.setX(speed);
 				this.isWalking = true;
+				this.isFacingRight = true;
 			}
 			if (InputManager.getKeyPressed(KeyCode.SPACE)) {
 				if (this.isGrounded && !this.isJumping) {

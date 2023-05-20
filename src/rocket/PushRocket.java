@@ -10,21 +10,21 @@ import rocket.ExplosionArea.ExplosionType;
 import utils.Resource;
 import utils.Vector2D;
 
-public class NormalRocket extends Rocket {
+public class PushRocket extends Rocket {
 
-	public NormalRocket(Earthling owner, Vector2D position, Vector2D velocity) {
-		super(owner, position, velocity, new CircleCollider2D(position,Config.normalRocketRadius));
-		this.radius = Config.normalRocketRadius;
-		this.explosionRadius = Config.normalRocketExplosionRadius;
-		this.damage = Config.normalRocketDamage;
-		this.pushPower = Config.normalRocketPushPower;
+	public PushRocket(Earthling owner, Vector2D position, Vector2D velocity) {
+		super(owner, position, velocity,new CircleCollider2D(position,Config.pushRocketRadius));
+		this.radius = Config.pushRocketRadius;
+		this.explosionRadius = Config.pushRocketExplosionRadius;
+		this.damage = Config.pushRocketDamage;
+		this.pushPower = Config.pushRocketPushPower;
 	}
 
 	@Override
 	public void triggerCollide() {
 		Platform.runLater(() -> GameplayManager.getInstance()
 				.addNewObject(new ExplosionArea(new CircleCollider2D(this.getPosition(), this.explosionRadius),
-						ExplosionType.Circle, this.getPosition(),true, this.damage, this.pushPower)));
+						ExplosionType.Circle, this.getPosition(),false, this.damage, this.pushPower)));
 		this.setDestroyed(true);
 	}
 

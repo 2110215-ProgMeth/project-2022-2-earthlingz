@@ -7,6 +7,7 @@ import input.InputManager;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import logic.BoxCollider2D;
+import logic.CircleCollider2D;
 import logic.Collider2D;
 import logic.GameplayManager;
 import utils.Resource;
@@ -21,13 +22,15 @@ public class ExplosionArea extends PhysicsObject {
 	private ExplosionType type;
 	private int explosionDamage;
 	private int pushPower;
+	private boolean isDestructive;
 
-	public ExplosionArea(Collider2D collider, ExplosionType type, Vector2D position, int explosionDamage,
+	public ExplosionArea(Collider2D collider, ExplosionType type, Vector2D position,boolean isDestructive, int explosionDamage,
 			int pushPower) {
 		super(collider, position);
 		this.z = 10;
 		this.isKinematic = false;
 		this.type = type;
+		this.isDestructive = isDestructive;
 		this.explosionDamage = explosionDamage;
 		this.pushPower = pushPower;
 	}
@@ -36,7 +39,7 @@ public class ExplosionArea extends PhysicsObject {
 		if (physicsObject instanceof Earthling) {
 			Earthling earthling = (Earthling) physicsObject;
 			Platform.runLater(() -> earthling.recieveDamage(this.explosionDamage));
-		} else if (physicsObject instanceof FloorBox) {
+		} else if (physicsObject instanceof FloorBox && this.isDestructive) {
 			FloorBox floorBox = (FloorBox) physicsObject;
 			floorBox.setDestroyed(true);
 		}
@@ -55,8 +58,11 @@ public class ExplosionArea extends PhysicsObject {
 	public void render(GraphicsContext gc) {
 		Vector2D center = this.getCollider().getCenter();
 		if (this.type == ExplosionType.Circle) {
-
-			gc.drawImage(Resource.rocket, center.getX() - 128 / 2, center.getY() - 128 / 2, 128, 128);
+			CircleCollider2D circle = (CircleCollider2D) this.collider;
+			gc.drawImage(Resource.circleExplosionArea, center.getX() - circle.getRadius() / 2, center.getY() - circle.getRadius() / 2, circle.getRadius(), circle.getRadius());
+		} else if(this.type == ExplosionType.Rectangle) {
+			BoxCollider2D box = (BoxCollider2D ) this.collider;
+			gc.drawImage(Resource.rectangleExplosionArea, center.getX() - box.getWidth() / 2, center.getY() - box.getHeight()/ 2, box.getWidth(), box.getHeight());
 		}
 
 	}
