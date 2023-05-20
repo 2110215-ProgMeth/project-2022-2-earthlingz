@@ -3,6 +3,7 @@ package scene;
 import config.Config;
 import input.InputManager;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +19,13 @@ public class SceneManager {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("EarthlingZ");
 		this.primaryStage.setResizable(false);
+
+//		this.primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
+//			if (k.getCode() == KeyCode.SPACE) {
+//				k.consume();
+//			}
+//		});
+
 		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
 //		this.currentScenePane = new GameplayScenePane(Config.screenWidth, Config.screenHeight);
 		Scene scene = new Scene(currentScenePane);

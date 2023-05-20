@@ -1,6 +1,14 @@
 package config;
 
+import map.*;
+
 public class Config {
+	
+	//// Dynamic Settings
+	public static int teamAmount = 2;
+	public static GameMap selectedMap = new SnowMap();
+	
+	//// Static Settings
 	
 	// General Settings
 	public static final double screenWidth = 1280;
@@ -35,8 +43,8 @@ public class Config {
 	public static final double earthlingMaxFirePower = 70;
 	
 	public static final int normalRocketDamage = 30;
-	public static final int normalRocketRadius = 64;
-	public static final int normalRocketExplosionRadius = 64;
+	public static final int normalRocketRadius = 32;
+	public static final int normalRocketExplosionRadius = 96;
 	public static final int normalRocketPushPower = 300;
 	
 	public static final int verticalRocketDamage = 0;

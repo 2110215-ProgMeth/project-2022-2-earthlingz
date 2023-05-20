@@ -14,6 +14,7 @@ public class Resource {
 	public static Image floor_snow;
 	
 	public static Image earthlingIdle;
+	public static Image earthlingCorpse;
 
 	public static Image bazooka;
 	public static Image rocket;
@@ -33,6 +34,7 @@ public class Resource {
 		floor_snow = new Image(ClassLoader.getSystemResource("texture/floor_snow.png").toString());
 //		earthlingIdle = new Image(ClassLoader.getSystemResource("entity/black-circle.png").toString());
 		earthlingIdle = new Image(ClassLoader.getSystemResource("sprite/idle.png").toString());
+		earthlingCorpse = new Image(ClassLoader.getSystemResource("sprite/dead_1.png").toString());
 		bazooka = new Image(ClassLoader.getSystemResource("entity/rectangle-32.png").toString());
 		
 		rocket = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());

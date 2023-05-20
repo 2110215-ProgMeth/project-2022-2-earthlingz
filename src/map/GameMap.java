@@ -10,7 +10,7 @@ public abstract class GameMap {
 	protected Image backgroundImage;
 	protected Image floorBoxImage;
 	
-	public int getTerrain(int x, int y) {
+	public int getObject(int x, int y) {
 		if (x < 0 || x >= mapSheet[0].length || y < 0 || y >= mapSheet.length)
 			return 0;
 		return mapSheet[y][x];

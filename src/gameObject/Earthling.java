@@ -16,6 +16,10 @@ import utils.Vector2D;
 
 public class Earthling extends PhysicsObject {
 
+	public static enum RocketType {
+		NormalRocket, VerticalRocket, PushRocket
+	}
+
 	private int team;
 	private String name;
 	private int health;
@@ -28,18 +32,19 @@ public class Earthling extends PhysicsObject {
 	private double maxFirePower;
 	private boolean isCharging;
 	private double currentChargeRate;
-	private double chargeStartTime;
+	private double chargeDuration;
 	private boolean isFacingRight;
 	private boolean isWalking;
 	private boolean isJumping;
 
-	public Earthling(Vector2D position, boolean isPlayable) {
+	public Earthling(Vector2D position, int team, boolean isPlayable) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
 				Config.earthlingMass);
 		this.z = 10;
 		this.name = "Earthling";
 		this.health = 100;
-		this.isPlayer = isPlayable;
+		this.team = team;
+		this.isPlayer = isPlayer;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
 		this.groundCollider = new BoxCollider2D(
@@ -52,14 +57,14 @@ public class Earthling extends PhysicsObject {
 		this.isJumping = false;
 	}
 
-	public Earthling(Vector2D position, boolean isPlayable, String name) {
-		this(position, isPlayable);
+	public Earthling(Vector2D position, int team, boolean isPlayable, String name) {
+		this(position, team, isPlayable);
 		this.name = name;
 	}
 
-	public Earthling(Vector2D position, boolean isPlayable, String name, double mass, double speed, double jumpPower,
-			double maxFirePower) {
-		this(position, isPlayable, name);
+	public Earthling(Vector2D position, int team, boolean isPlayable, String name, double mass, double speed,
+			double jumpPower, double maxFirePower) {
+		this(position, team, isPlayable, name);
 		this.mass = mass;
 		this.speed = speed;
 		this.jumpPower = jumpPower;
@@ -75,15 +80,16 @@ public class Earthling extends PhysicsObject {
 
 	@Override
 	public void render(GraphicsContext gc) {
-		int direction  = (this.isFacingRight ? -1 : 1);
-		
+		int direction = (this.isFacingRight ? -1 : 1);
+
 		gc.translate(this.position.getX(), this.position.getY());
 
-		gc.drawImage(Resource.earthlingIdle, direction*this.width / 2, -this.height / 2, -direction*this.width, this.height);
+		gc.drawImage(Resource.earthlingIdle, direction * this.width / 2, -this.height / 2, -direction * this.width,
+				this.height);
 
 		// Calculate the angle between the object and the mouse position
 		if (this.isPlayer) {
-			
+
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
 			gc.rotate(Math.toDegrees(angle));
@@ -103,19 +109,21 @@ public class Earthling extends PhysicsObject {
 		Vector2D startPosition = Vector2D.add(this.getPosition(),
 				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
 		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
-//		Platform.runLater(() -> GameplayManager.getInstance()
-//				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
 		Platform.runLater(() -> GameplayManager.getInstance()
-		.addNewObject(new VerticalRocket(this, startPosition, rocketVelocity)));
+				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
+//		Platform.runLater(() -> GameplayManager.getInstance()
+//				.addNewObject(new VerticalRocket(this, startPosition, rocketVelocity)));
 //		Platform.runLater(() -> GameplayManager.getInstance()
 //		.addNewObject(new PushRocket(this, startPosition, rocketVelocity)));
 	}
 
 	public void recieveDamage(int damage) {
 		this.health -= damage;
-		System.out.println(this.health);
+		System.out.println(this.team + " " + this.health);
 		if (this.health <= 0) {
 			this.destroyed = true;
+			Platform.runLater(() -> GameplayManager.getInstance()
+					.addNewObject(new Corpse(this)));
 		}
 	}
 
@@ -139,30 +147,22 @@ public class Earthling extends PhysicsObject {
 				}
 			}
 			this.isGrounded = false;
-//			if (InputManager.isLeftClickTriggered()) {
-//				this.shootRocket();
-////				this.setPosition(new Vector2D(InputManager.mouseX, InputManager.mouseY));
-////				this.acceleration = new Vector2D();
-////				this.velocity = new Vector2D();
-////				System.out.println("click" + new Vector2D(InputManager.mouseX, InputManager.mouseY));
-//			}
 			if (InputManager.isLeftClickTriggered()) {
-				this.chargeStartTime = Time.getCurrentTimeSecond();
+				this.chargeDuration = 0;
 				this.isCharging = true;
 			}
 			if (this.isCharging) {
-				double totalChargeTime = Time.getCurrentTimeSecond() - this.chargeStartTime;
+				this.chargeDuration += Time.getDeltaTimeSecond();
 				if (InputManager.isMouseLeftDown()) {
-					this.currentChargeRate = (Math.abs(Math.sin(totalChargeTime / (4 * Math.PI))) * 90 + 10);
+					this.currentChargeRate = (Math.abs(Math.sin(this.chargeDuration / (4 * Math.PI))) * 90 + 10);
 					System.out.println(this.currentChargeRate + "%");
-				} else if (totalChargeTime > 0.5) {
+				} else if (this.chargeDuration > 0.5) {
 					this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
 					this.isCharging = false;
 				} else {
 					this.isCharging = false;
 				}
 			}
-
 		} else {
 			this.velocity.setX(0);
 			this.isGrounded = false;
@@ -182,6 +182,14 @@ public class Earthling extends PhysicsObject {
 	@Override
 	public void setPosition(Vector2D position) {
 		this.translate(new Vector2D(this.position, position));
+	}
+
+	public int getTeam() {
+		return team;
+	}
+
+	public void setTeam(int team) {
+		this.team = team;
 	}
 
 	public String getName() {
@@ -238,5 +246,13 @@ public class Earthling extends PhysicsObject {
 
 	public void setMaxFirePower(double maxFirePower) {
 		this.maxFirePower = maxFirePower;
+	}
+
+	public boolean isFacingRight() {
+		return isFacingRight;
+	}
+
+	public void setFacingRight(boolean isFacingRight) {
+		this.isFacingRight = isFacingRight;
 	}
 }

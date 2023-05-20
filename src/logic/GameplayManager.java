@@ -11,7 +11,6 @@ import gameObject.GameObject;
 import gameObject.PhysicsObject;
 import javafx.application.Platform;
 import map.GameMap;
-import map.SnowMap;
 import render.RenderableManager;
 import rocket.ExplosionArea;
 import rocket.Rocket;
@@ -26,18 +25,20 @@ public class GameplayManager {
 	private List<GameObject> gameObjectContainer;
 	private List<PhysicsObject> physicsObjectContainer;
 	
-	private int currentTurn;
+	private int teamCount;
 	private int currentTeam;
+	private int turnCount;
+	private int currentTurn;
+	private boolean endTurn;
+	private List<ArrayList<Earthling>> teamMembersContainer;
+	private Earthling currentPlayer;
 
 	public GameplayManager(GameplayScenePane scene) {
 		this.scene = scene;
-		
 		this.gameObjectContainer = new ArrayList<GameObject>();
 		this.physicsObjectContainer = new ArrayList<PhysicsObject>();
 
 		this.initializeGameplay();
-
-		System.out.println(this.physicsObjectContainer);
 	}
 
 	public static void initializeGameplayManager(GameplayScenePane scene) {
@@ -48,15 +49,43 @@ public class GameplayManager {
 		return instance;
 	}
 
-	protected void initializeGameplay() {
-
-		this.initializeMap(new SnowMap());
-
-		this.addNewObject(new Earthling(new Vector2D(), true, "amo"));
-
+	private void initializeGameplay() {
+		this.turnCount = 0;
 		this.currentTurn = 0;
-		this.addNewObject(new Earthling(new Vector2D(256, 256), false, "gus", 10, 10, 30, 100));
+		this.teamCount = Config.teamAmount;
+		this.currentTeam = 0;
+		
+		this.teamMembersContainer = new ArrayList<ArrayList<Earthling>>();
+		for (int i = 0; i < teamCount; i++) {
+			this.teamMembersContainer.add(new ArrayList<Earthling>());
+		}
 
+		this.initializeMap(Config.selectedMap);
+		
+		this.teamMembersContainer.get(this.currentTeam).get(0).setPlayer(true);
+		
+		System.out.println(this.teamMembersContainer);
+
+//		this.addNewObject(new Earthling(new Vector2D(), true, "amo"));
+//		this.addNewObject(new Earthling(new Vector2D(256, 256), false, "gus", 10, 10, 30, 100));
+
+	}
+
+	private void initializeMap(GameMap map) {
+		this.addNewObject(new Background(map.getBackgroundImage()));
+		for (int y = 0; y < GameMap.mapRow; y++) {
+			for (int x = 0; x < GameMap.mapCol; x++) {
+				if (map.getObject(x, y) == 1) {
+					this.addNewObject(new FloorBox(new Vector2D(x * 32, y * 32), map.getFloorBoxImage()));
+				}
+				if (map.getObject(x, y) == 2) {
+					Earthling earthling = new Earthling(new Vector2D(x * 32, y * 32), this.currentTeam, false);
+					this.addNewObject(earthling);
+					this.teamMembersContainer.get(this.currentTeam).add(earthling);
+					this.currentTeam = (currentTeam + 1) % teamCount;
+				}
+			}
+		}
 	}
 
 	public void addNewObject(GameObject gameObject) {
@@ -67,18 +96,9 @@ public class GameplayManager {
 		RenderableManager.getInstance().add(gameObject);
 	}
 
-	private void initializeMap(GameMap map) {
-		this.addNewObject(new Background(map.getBackgroundImage()));
-		for (int y = 0; y < GameMap.mapRow; y++) {
-			for (int x = 0; x < GameMap.mapCol; x++) {
-				if (map.getTerrain(x, y) == 1) {
-					this.addNewObject(new FloorBox(new Vector2D(x * 32, y * 32), map.getFloorBoxImage()));
-				}
-			}
-		}
-	}
-
 	public void updateLogic() {
+
+		this.processTurn();
 
 		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
 			this.processState(physicsObject);
@@ -94,11 +114,14 @@ public class GameplayManager {
 		for (GameObject gameObject : this.gameObjectContainer) {
 			this.processOutOfBound(gameObject);
 		}
-
 		this.updateContainer();
+	}
 
-//		System.out.println(physicsObjectContainer);
-
+	private void processTurn() {
+		if (this.endTurn) {
+			this.currentTeam = (currentTeam + 1) % teamCount;
+		}
+//		if(this.
 	}
 
 	private void processState(PhysicsObject physicsObject) {
@@ -132,7 +155,7 @@ public class GameplayManager {
 				Rocket rocket = (Rocket) physicsObject;
 				if (other.equals(rocket.getOwner())) {
 					continue;
-				}				
+				}
 				if (other instanceof Rocket) {
 					continue;
 				}
@@ -148,7 +171,6 @@ public class GameplayManager {
 					explosion.explode(other);
 				}
 			}
-
 		}
 
 	}
