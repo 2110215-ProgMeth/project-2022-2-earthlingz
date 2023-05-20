@@ -10,6 +10,8 @@ public class InputManager {
 	public static boolean mouseOnScreen = true;
 	private static boolean isMouseLeftDown = false;
 	private static boolean isLeftClickedLastTick = false;
+	private static boolean isMouseRightDown = false;
+	private static boolean isRightClickedLastTick = false;
 	private static ArrayList<KeyCode> keyPressed = new ArrayList<>(); 
 	
 	public static boolean getKeyPressed(KeyCode keycode) {
@@ -39,11 +41,25 @@ public class InputManager {
 		return isLeftClickedLastTick;
 	}
 	
+	public static void mouseRightDown(){
+		isMouseRightDown = true;
+		isRightClickedLastTick = true;
+	}
+	
+	public static void mouseRightRelease(){
+		isMouseRightDown = false;
+	}
+	
+	public static boolean isRightClickTriggered(){
+		return isRightClickedLastTick;
+	}
+	
 	public static boolean isMouseLeftDown() {
 		return isMouseLeftDown;
 	}
 	public static void updateInputState(){
 		isLeftClickedLastTick = false;
+		isRightClickedLastTick = false;
 	}
 	
 }

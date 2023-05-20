@@ -3,13 +3,11 @@ package rocket;
 import gameObject.Earthling;
 import gameObject.FloorBox;
 import gameObject.PhysicsObject;
-import input.InputManager;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import logic.BoxCollider2D;
 import logic.CircleCollider2D;
 import logic.Collider2D;
-import logic.GameplayManager;
 import utils.Resource;
 import utils.Vector2D;
 
@@ -41,17 +39,17 @@ public class ExplosionArea extends PhysicsObject {
 			Platform.runLater(() -> earthling.recieveDamage(this.explosionDamage));
 		} else if (physicsObject instanceof FloorBox && this.isDestructive) {
 			FloorBox floorBox = (FloorBox) physicsObject;
-			floorBox.setDestroyed(true);
+			floorBox.destroy();
 		}
 		if (physicsObject.isKinematic()) {
 			Vector2D direction = new Vector2D(this.getPosition(), physicsObject.getPosition()).getDirectionalVector();
 			physicsObject.addImpulse(Vector2D.multiply(direction, this.pushPower), true);
 		}
-		this.setDestroyed(true);
+		this.destroy();
 	}
 
 	public void updateState() {
-		this.setDestroyed(true);
+		this.destroy();
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class ExplosionArea extends PhysicsObject {
 		Vector2D center = this.getCollider().getCenter();
 		if (this.type == ExplosionType.Circle) {
 			CircleCollider2D circle = (CircleCollider2D) this.collider;
-			gc.drawImage(Resource.explosionArea_circle, center.getX() - circle.getRadius() / 2, center.getY() - circle.getRadius() / 2, circle.getRadius(), circle.getRadius());
+			gc.drawImage(Resource.explosionArea_circle, center.getX() - circle.getRadius(), center.getY() - circle.getRadius(), circle.getRadius()*2, circle.getRadius()*2);
 		} else if(this.type == ExplosionType.Rectangle) {
 			BoxCollider2D box = (BoxCollider2D ) this.collider;
 			gc.drawImage(Resource.explosionArea_rectangle, center.getX() - box.getWidth() / 2, center.getY() - box.getHeight()/ 2, box.getWidth(), box.getHeight());

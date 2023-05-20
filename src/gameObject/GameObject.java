@@ -24,14 +24,14 @@ public abstract class GameObject implements Renderable {
 	public void translate(Vector2D vector) {
 		this.position.add(vector);
 	}
+	
+	public void destroy() {
+		this.destroyed = true;
+	}
 
 	@Override
 	public boolean isDestroyed() {
 		return destroyed;
-	}
-	
-	public void setDestroyed(boolean destroyed) {
-		this.destroyed = destroyed;
 	}
 
 	@Override

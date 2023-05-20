@@ -3,6 +3,8 @@ package rocket;
 import gameObject.Earthling;
 import gameObject.PhysicsObject;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 import logic.Collider2D;
 import utils.Resource;
 import utils.Vector2D;
@@ -14,6 +16,8 @@ public abstract class Rocket extends PhysicsObject {
 	protected int damage;
 	protected int pushPower;
 	protected Earthling owner;
+	protected Image sprite;
+	protected AudioClip explosionSound;
 
 	public Rocket(Earthling owner, Vector2D position, Vector2D velocity, Collider2D collider) {
 		super(collider, position);
@@ -22,14 +26,22 @@ public abstract class Rocket extends PhysicsObject {
 		this.radius = 16;
 		this.explosionRadius = 32;
 		this.mass = 1;
+		this.sprite = Resource.sprite_rocket;
+		this.explosionSound = Resource.sound_explosionNormal;
 	}
 
 	public abstract void triggerCollide();
 
 	@Override
 	public void render(GraphicsContext gc) {
-		gc.drawImage(Resource.sprite_rocket, this.position.getX() - this.radius / 2, this.position.getY() - this.radius / 2,
+		gc.drawImage(this.sprite, this.position.getX() - this.radius / 2, this.position.getY() - this.radius / 2,
 				this.radius, this.radius);
+	}
+	
+	@Override
+	public void destroy() {
+		super.destroy();
+		this.explosionSound.play();
 	}
 
 	public Earthling getOwner() {

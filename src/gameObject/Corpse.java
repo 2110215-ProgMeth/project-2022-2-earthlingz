@@ -3,7 +3,6 @@ package gameObject;
 import config.Config;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import utils.Resource;
 import utils.Vector2D;
 
 public class Corpse extends PhysicsObject {
@@ -20,7 +19,7 @@ public class Corpse extends PhysicsObject {
 		this.height = Config.earthlingHeight;
 		this.sprite = sprite;
 		this.wasFacingRight = earthling.isFacingRight();
-		this.velocity = new Vector2D(0, -Config.gravity*4);
+		this.velocity = new Vector2D(0, -Config.gravity*6);
 	}
 
 	@Override

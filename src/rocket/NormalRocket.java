@@ -3,7 +3,6 @@ package rocket;
 import config.Config;
 import gameObject.Earthling;
 import javafx.application.Platform;
-import javafx.scene.canvas.GraphicsContext;
 import logic.CircleCollider2D;
 import logic.GameplayManager;
 import rocket.ExplosionArea.ExplosionType;
@@ -18,6 +17,8 @@ public class NormalRocket extends Rocket {
 		this.explosionRadius = Config.normalRocketExplosionRadius;
 		this.damage = Config.normalRocketDamage;
 		this.pushPower = Config.normalRocketPushPower;
+		this.sprite = Resource.sprite_rocket_normal;
+		this.explosionSound = Resource.sound_explosionNormal;
 	}
 
 	@Override
@@ -25,13 +26,7 @@ public class NormalRocket extends Rocket {
 		Platform.runLater(() -> GameplayManager.getInstance()
 				.addNewObject(new ExplosionArea(new CircleCollider2D(this.getPosition(), this.explosionRadius),
 						ExplosionType.Circle, this.getPosition(),true, this.damage, this.pushPower)));
-		this.setDestroyed(true);
-	}
-
-	@Override
-	public void render(GraphicsContext gc) {
-		gc.drawImage(Resource.sprite_rocket, this.position.getX() - this.radius / 2, this.position.getY() - this.radius / 2,
-				this.radius, this.radius);
+		this.destroy();
 	}
 
 }

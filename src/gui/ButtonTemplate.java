@@ -22,9 +22,5 @@ public class ButtonTemplate extends Button {
 		this.setMaxHeight(height);
 		this.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, fontSize));
 	}
-	
-	private void onHover() {
-		
-	}
 
 }

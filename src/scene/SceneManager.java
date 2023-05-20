@@ -19,15 +19,8 @@ public class SceneManager {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("EarthlingZ");
 		this.primaryStage.setResizable(false);
-
-//		this.primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
-//			if (k.getCode() == KeyCode.SPACE) {
-//				k.consume();
-//			}
-//		});
-
+		
 		this.currentScenePane = new TitleScenePane(Config.screenWidth, Config.screenHeight);
-//		this.currentScenePane = new GameplayScenePane(Config.screenWidth, Config.screenHeight);
 		Scene scene = new Scene(currentScenePane);
 		this.addListerner(scene);
 		this.primaryStage.setScene(scene);
@@ -66,11 +59,15 @@ public class SceneManager {
 		scene.setOnMousePressed((MouseEvent event) -> {
 			if (event.getButton() == MouseButton.PRIMARY)
 				InputManager.mouseLeftDown();
+			if (event.getButton() == MouseButton.SECONDARY)
+				InputManager.mouseRightDown();
 		});
 
 		scene.setOnMouseReleased((MouseEvent event) -> {
 			if (event.getButton() == MouseButton.PRIMARY)
 				InputManager.mouseLeftRelease();
+			if (event.getButton() == MouseButton.SECONDARY)
+				InputManager.mouseRightRelease();
 		});
 
 		scene.setOnMouseEntered((MouseEvent event) -> {

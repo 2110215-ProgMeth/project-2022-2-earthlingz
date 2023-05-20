@@ -6,10 +6,18 @@ import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import logic.BoxCollider2D;
 import logic.GameplayManager;
 import rocket.NormalRocket;
 import rocket.PushRocket;
+import rocket.Rocket;
 import rocket.VerticalRocket;
 import utils.Resource;
 import utils.Time;
@@ -36,6 +44,8 @@ public class Earthling extends PhysicsObject {
 	private boolean isCharging;
 	private double currentChargeRate;
 	private double chargeDuration;
+	private RocketType rocketType;
+	private MediaPlayer chargeSound;
 	private boolean isFacingRight;
 	private boolean isWalking;
 	private boolean isJumping;
@@ -63,6 +73,8 @@ public class Earthling extends PhysicsObject {
 		this.speed = Config.earthlingSpeed;
 		this.jumpPower = Config.earthlingJumpPower;
 		this.maxFirePower = Config.earthlingMaxFirePower;
+		this.rocketType = RocketType.NormalRocket;
+		this.chargeSound = new MediaPlayer(Resource.sound_earthlingCharge);
 		this.isFacingRight = true;
 		this.isJumping = false;
 	}
@@ -105,10 +117,28 @@ public class Earthling extends PhysicsObject {
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
 			gc.rotate(Math.toDegrees(angle));
-			gc.drawImage(Resource.sprite_bazooka, -bazookaWidth/2, -bazookaHeight/2, bazookaWidth, bazookaHeight);
+			gc.drawImage(Resource.sprite_bazooka, -bazookaWidth / 2, -bazookaHeight / 2, bazookaWidth, bazookaHeight);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
+		
+		// Draw HP
+        gc.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.earthlingHpTextSize));
+        gc.setTextAlign(TextAlignment.CENTER);
+        switch(this.team) {
+		case 0:
+	        gc.setFill(Color.GREEN);
+	        gc.fillText(this.health+"", 0,-this.height+10);
+			break;
+		case 1:
+	        gc.setFill(Color.RED);
+	        gc.fillText(this.health+"", 0,-this.height+10);
+			break;
+		default:
+	        gc.setFill(Color.GREEN);
+	        gc.fillText(this.health+"", 0,-this.height+10);
+			break;
+        }
 
 		gc.translate(-this.position.getX(), -this.position.getY());
 
@@ -121,22 +151,41 @@ public class Earthling extends PhysicsObject {
 		Vector2D startPosition = Vector2D.add(this.getPosition(),
 				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
 		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
-		Platform.runLater(() -> GameplayManager.getInstance()
-				.addNewObject(new NormalRocket(this, startPosition, rocketVelocity)));
-//		Platform.runLater(() -> GameplayManager.getInstance()
-//				.addNewObject(new VerticalRocket(this, startPosition, rocketVelocity)));
-//		Platform.runLater(() -> GameplayManager.getInstance()
-//		.addNewObject(new PushRocket(this, startPosition, rocketVelocity)));
-		GameplayManager.getInstance().endTurn();
+		Rocket rocket;
+		switch (this.rocketType) {
+		case NormalRocket:
+			rocket = new NormalRocket(this, startPosition, rocketVelocity);
+			break;
+		case VerticalRocket:
+			rocket = new VerticalRocket(this, startPosition, rocketVelocity);
+			break;
+		case PushRocket:
+			rocket = new PushRocket(this, startPosition, rocketVelocity);
+			break;
+		default:
+			rocket = new NormalRocket(this, startPosition, rocketVelocity);
+			break;
+		}
+		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(rocket));
+		GameplayManager.getInstance().onPlayerShootRocket(this.rocketType);
 	}
 
 	public void recieveDamage(int damage) {
 		this.health -= damage;
 		System.out.println(this.team + " " + this.health);
 		if (this.health <= 0) {
-			this.destroyed = true;
-			Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new Corpse(this, this.sprite_dead)));
+			this.destroy();
+		} else {
+			Resource.playSound(Resource.sound_earthlingHurt);
 		}
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new Corpse(this, this.sprite_dead)));
+		Resource.playSound(Resource.sound_earthlingDead);
+		this.chargeSound.stop();
 	}
 
 	public void updateState() {
@@ -162,6 +211,12 @@ public class Earthling extends PhysicsObject {
 			if (InputManager.isLeftClickTriggered()) {
 				this.chargeDuration = 0;
 				this.isCharging = true;
+				this.chargeSound.setRate(0.6);
+				this.chargeSound.play();
+				this.chargeSound.setOnEndOfMedia(() -> {
+					this.chargeSound.seek(Duration.ZERO);
+					this.chargeSound.setRate(this.currentChargeRate / 100 * 1.2 + 0.6);
+				});
 			}
 			if (this.isCharging) {
 				this.chargeDuration += Time.getDeltaTimeSecond();
@@ -171,8 +226,12 @@ public class Earthling extends PhysicsObject {
 				} else if (this.chargeDuration > 0.5) {
 					this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
 					this.isCharging = false;
+					this.currentChargeRate = 0;
+					this.chargeSound.stop();
 				} else {
 					this.isCharging = false;
+					this.currentChargeRate = 0;
+					this.chargeSound.stop();
 				}
 			}
 		} else {
@@ -258,6 +317,22 @@ public class Earthling extends PhysicsObject {
 
 	public void setMaxFirePower(double maxFirePower) {
 		this.maxFirePower = maxFirePower;
+	}
+
+	public RocketType getRocketType() {
+		return rocketType;
+	}
+
+	public void setRocketType(RocketType rocketType) {
+		this.rocketType = rocketType;
+	}
+
+	public double getCurrentChargeRate() {
+		return currentChargeRate;
+	}
+
+	public MediaPlayer getChargeSound() {
+		return chargeSound;
 	}
 
 	public boolean isFacingRight() {
