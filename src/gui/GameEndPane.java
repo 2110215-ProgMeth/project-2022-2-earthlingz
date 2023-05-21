@@ -3,6 +3,7 @@ package gui;
 import config.Config;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -25,8 +26,8 @@ public class GameEndPane extends StackPane {
 
 	private Text winnerText;
 	private ImageView winnerBackground;
-	private ButtonTemplate playAgainButton;
-	private ButtonTemplate backToTitleButton;
+	private Button playAgainButton;
+	private Button backToTitleButton;
 	private VBox buttonPane;
 	private VBox mainPane;
 
@@ -95,11 +96,13 @@ public class GameEndPane extends StackPane {
 	}
 
 	private void playAgain() {
+		System.out.println("PLAY AGAIN");
 		RenderableManager.getInstance().clear();
 		SceneManager.getInstance().changeScene(new GameplayScenePane(Config.screenWidth, Config.screenHeight));
 	}
 
 	private void backToTitle() {
+		System.out.println("BACK TO TITLE");
 		RenderableManager.getInstance().clear();
 		SceneManager.getInstance().changeScene(new TitleScenePane(Config.screenWidth, Config.screenHeight));
 	}

@@ -69,19 +69,19 @@ public class Config {
 	public static final double bazookaWidth = 60;
 	public static final double bazookaHeight = 25;
 
-	public static final int normalRocketDamage = 30;
+	public static final int normalRocketDamage = 35;
 	public static final int normalRocketRadius = 32;
-	public static final int normalRocketExplosionRadius = 96;
+	public static final int normalRocketExplosionRadius = 128;
 	public static final int normalRocketPushPower = 300;
 
-	public static final int verticalRocketDamage = 0;
+	public static final int verticalRocketDamage = 5;
 	public static final int verticalRocketRadius = 16;
 	public static final int verticalRocketExplosionRadius = 16;
-	public static final int verticalRocketPushPower = 0;
+	public static final int verticalRocketPushPower = 100;
 
-	public static final int pushRocketDamage = 5;
+	public static final int pushRocketDamage = 10;
 	public static final int pushRocketRadius = 16;
-	public static final int pushRocketExplosionRadius = 128;
+	public static final int pushRocketExplosionRadius = 192;
 	public static final int pushRocketPushPower = 750;
 
 	public static final int pushRocketAmount = 10;
