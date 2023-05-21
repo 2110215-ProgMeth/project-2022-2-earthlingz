@@ -4,9 +4,14 @@ import config.Config;
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
+import javafx.scene.text.Font;
 
 public class Resource {
 
+	// Font
+	public static String font_normal;
+	public static String font_pixel;
+	
 	// Title Scene
 	public static Image background_title;
 	public static AudioClip music_title;
@@ -19,7 +24,11 @@ public class Resource {
 	public static AudioClip music_battle_ruin;
 	public static AudioClip music_battle_ancient;
 
+	public static Image background_red_win;
+	public static Image background_green_win;
+
 	public static Image floor_snow;
+	public static Image floor_ancient;
 	public static AudioClip sound_boxBreak;
 
 	public static Image earthling_idle_red;
@@ -49,6 +58,9 @@ public class Resource {
 	}
 
 	public static void loadResource() {
+		font_normal = ClassLoader.getSystemResource("font/Bungee-Regular.ttf").toString();
+		font_pixel = ClassLoader.getSystemResource("font/ModernDOS9x14.ttf").toString();
+		
 		background_title = new Image(ClassLoader.getSystemResource("background/title.png").toString());
 		music_title = new AudioClip(ClassLoader.getSystemResource("music/title.mp3").toString());
 
@@ -59,7 +71,11 @@ public class Resource {
 		music_battle_ruin = new AudioClip(ClassLoader.getSystemResource("music/battle_ruin.mp3").toString());
 		music_battle_ancient = new AudioClip(ClassLoader.getSystemResource("music/battle_ancient.mp3").toString());
 
+		background_red_win = new Image(ClassLoader.getSystemResource("background/red_win.png").toString());
+		background_green_win = new Image(ClassLoader.getSystemResource("background/green_win.jpg").toString());
+
 		floor_snow = new Image(ClassLoader.getSystemResource("texture/floor_snow.png").toString());
+		floor_ancient = new Image(ClassLoader.getSystemResource("texture/floor_ancient.png").toString());
 		sound_boxBreak = new AudioClip(ClassLoader.getSystemResource("sound/box_break.wav").toString());
 
 		earthling_idle_red = new Image(ClassLoader.getSystemResource("sprite/robot_red.png").toString());
@@ -81,6 +97,10 @@ public class Resource {
 
 		explosionArea_circle = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
 		explosionArea_rectangle = new Image(ClassLoader.getSystemResource("entity/redrectangle.png").toString());
+	}
+	
+	public static Font getFont(String fontPath, int fontSize) {
+		return (Font.loadFont(fontPath, fontSize));
 	}
 
 	public static void playSound(AudioClip sound) {

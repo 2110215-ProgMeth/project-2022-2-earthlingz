@@ -10,8 +10,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import logic.GameplayManager;
 import utils.Resource;
@@ -52,8 +50,8 @@ public class GameplayScenePane extends ScenePane {
 		GameplayManager logic = GameplayManager.getInstance();
 		Earthling player = logic.getCurrentPlayer();
 
-		Font gameStateFont = this.getFont(Config.gameStateTextSize);
-		Font playerNameFont = this.getFont(Config.playerNameTextSize);
+		Font gameStateFont = Resource.getFont(Resource.font_pixel,Config.gameStateTextSize);
+		Font playerNameFont = Resource.getFont(Resource.font_normal,Config.playerNameTextSize);
 		double anchorPadding = Config.anchorPadding;
 		double vBoxSpacing = Config.vBoxSpacing;
 
@@ -127,11 +125,11 @@ public class GameplayScenePane extends ScenePane {
 		rocketImageView.setFitHeight(Config.rocketImageHeight);
 
 		if (logic.isSelectingNormalRocket()) {
-			this.currentRocketAmountText = new Text("Amount : ∞");
+			this.currentRocketAmountText = new Text("amount: ∞");
 		} else {
-			this.currentRocketAmountText = new Text("Amount : " + logic.getCurrentRocketAmount());
+			this.currentRocketAmountText = new Text("amount: " + logic.getCurrentRocketAmount());
 		}
-		this.currentRocketAmountText.setFont(this.getFont(Config.rocketAmountTextSize));
+		this.currentRocketAmountText.setFont(Resource.getFont(Resource.font_pixel,Config.rocketAmountTextSize));
 		this.currentRocketAmountText.setFill(Color.WHITE);
 
 		this.currentRocketPane.setAlignment(Pos.TOP_RIGHT);
@@ -141,11 +139,11 @@ public class GameplayScenePane extends ScenePane {
 		this.chargePercentPane.setSpacing(vBoxSpacing);
 
 		Text chargeLabel = new Text("POWER");
-		chargeLabel.setFont(this.getFont(Config.chargeLabelTextSize));
+		chargeLabel.setFont(Resource.getFont(Resource.font_pixel,Config.chargeLabelTextSize));
 		chargeLabel.setFill(Color.WHITE);
 
 		this.chargePercentText = new Text("0%");
-		this.chargePercentText.setFont(this.getFont(Config.chargePercentTextSize));
+		this.chargePercentText.setFont(Resource.getFont(Resource.font_pixel,Config.chargePercentTextSize));
 		this.chargePercentText.setFill(Color.AQUA);
 
 		this.chargePercentPane.setAlignment(Pos.BOTTOM_RIGHT);
@@ -226,9 +224,9 @@ public class GameplayScenePane extends ScenePane {
 		rocketImageView.setFitHeight(Config.rocketImageHeight);
 
 		if (logic.isSelectingNormalRocket()) {
-			this.currentRocketAmountText.setText("Amount : ∞");
+			this.currentRocketAmountText.setText("amount: ∞");
 		} else {
-			this.currentRocketAmountText.setText("Amount : " + logic.getCurrentRocketAmount());
+			this.currentRocketAmountText.setText("amount: " + logic.getCurrentRocketAmount());
 		}
 
 		this.currentRocketPane.getChildren().clear();
@@ -241,10 +239,6 @@ public class GameplayScenePane extends ScenePane {
 	public void endGame() {
 		System.out.println("GAMEPLAY END");
 		this.getChildren().add(new GameEndPane(this, GameplayManager.getInstance().getCurrentTeam()));
-	}
-
-	private Font getFont(int fontSize) {
-		return Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, fontSize);
 	}
 
 }

@@ -6,7 +6,7 @@ public class Config {
 
 //	 Dynamic Settings
 	public static int teamAmount = 2;
-	public static GameMap selectedMap = new SnowMap();
+	public static GameMap selectedMap = new AncientMap();
 
 //	Static Settings
 
@@ -23,27 +23,27 @@ public class Config {
 	public static final String gameTitleTextColor = "#ff2f2b";
 	public static final double titleSceneButtonWidth = 500;
 	public static final double titleSceneButtonHeight = 100;
-	public static final int titleSceneButtonTextSize = 30;
+	public static final int titleSceneButtonTextSize = 50;
 
 	// Gameplay Scene Settings
 	public static final double anchorPadding = 30.0;
 	public static final double vBoxSpacing = 5.0;
-	public static final int gameStateTextSize = 35;
-	public static final int playerNameTextSize = 30;
-	public static final int rocketAmountTextSize = 20;
-	public static final int chargeLabelTextSize = 30;
-	public static final int chargePercentTextSize = 60;
+	public static final int gameStateTextSize = 50;
+	public static final int playerNameTextSize = 25;
+	public static final int rocketAmountTextSize = 30;
+	public static final int chargeLabelTextSize = 50;
+	public static final int chargePercentTextSize = 90;
 	public static final double playerImageWidth = 120;
 	public static final double playerImageHeight = 160;
-	public static final double rocketImageWidth = 120;
-	public static final double rocketImageHeight = 120;
+	public static final double rocketImageWidth = 150;
+	public static final double rocketImageHeight = 150;
 
 	public static final double gameEndPaneWidth = 800;
 	public static final double gameEndPaneHeight = 600;
 	public static final double gameEndButtonWidth = 400;
 	public static final double gameEndButtonHeight = 100;
-	public static final int gameEndWinnerTextSize = 60;
-	public static final int gameEndButtonTextSize = 25;
+	public static final int gameEndWinnerTextSize = 70;
+	public static final int gameEndButtonTextSize = 40;
 	public static final double gameEndBorderWidth = 10;
 
 	// Gameplay Logic Settings

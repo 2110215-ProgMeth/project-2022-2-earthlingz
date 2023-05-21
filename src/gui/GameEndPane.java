@@ -3,6 +3,7 @@ package gui;
 import config.Config;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
@@ -10,33 +11,33 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import render.RenderableManager;
 import scene.GameplayScenePane;
 import scene.SceneManager;
 import scene.TitleScenePane;
+import utils.Resource;
 
-public class GameEndPane extends VBox {
+public class GameEndPane extends StackPane {
 
 	private Text winnerText;
+	private ImageView winnerBackground;
 	private ButtonTemplate playAgainButton;
 	private ButtonTemplate backToTitleButton;
 	private VBox buttonPane;
+	private VBox mainPane;
 
 	public GameEndPane(GameplayScenePane scenePane, int winnerTeam) {
 		super();
 		this.setMaxWidth(Config.gameEndPaneWidth);
 		this.setMaxHeight(Config.gameEndPaneHeight);
 
-		this.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
-				new BorderWidths(Config.gameEndBorderWidth))));
-		this.setAlignment(Pos.CENTER);
-		this.setSpacing(50);
+		this.mainPane = new VBox();
+		this.mainPane.setSpacing(50);
+		this.mainPane.setAlignment(Pos.CENTER);
 
 		switch (winnerTeam) {
 		case 0:
@@ -50,10 +51,11 @@ public class GameEndPane extends VBox {
 			break;
 		}
 
-		this.winnerText.setFont(
-				Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.gameEndWinnerTextSize));
+		this.winnerText.setFont(Resource.getFont(Resource.font_normal, Config.gameEndWinnerTextSize));
 		this.winnerText.setStrokeWidth(4);
-		this.winnerText.setStroke(Color.BLACK);
+		this.winnerText.setStroke(Color.WHITE);
+		this.winnerBackground.setFitWidth(Config.gameEndPaneWidth);
+		this.winnerBackground.setFitHeight(Config.gameEndPaneHeight);
 
 		this.buttonPane = new VBox();
 		this.buttonPane.setSpacing(20);
@@ -69,19 +71,27 @@ public class GameEndPane extends VBox {
 
 		this.buttonPane.getChildren().addAll(this.playAgainButton, this.backToTitleButton);
 
-		this.getChildren().addAll(this.winnerText, this.buttonPane);
+		this.mainPane.getChildren().addAll(this.winnerText, this.buttonPane);
+
+		this.getChildren().addAll(this.winnerBackground, this.mainPane);
 	}
 
 	private void initializeGreenWinnerTeam() {
+		this.setBorder(new Border(new BorderStroke(Color.MEDIUMAQUAMARINE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+				new BorderWidths(Config.gameEndBorderWidth))));
 		this.setBackground(new Background(new BackgroundFill(Color.MEDIUMSEAGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		this.winnerText = new Text("TEAM GREEN WIN!!!");
 		this.winnerText.setFill(Color.GREEN);
+		this.winnerBackground = new ImageView(Resource.background_green_win);
 	}
 
 	private void initializeRedWinnerTeam() {
+		this.setBorder(new Border(new BorderStroke(Color.LIGHTCORAL, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+				new BorderWidths(Config.gameEndBorderWidth))));
 		this.setBackground(new Background(new BackgroundFill(Color.LIGHTCORAL, CornerRadii.EMPTY, Insets.EMPTY)));
 		this.winnerText = new Text("TEAM RED WIN!!!");
 		this.winnerText.setFill(Color.RED);
+		this.winnerBackground = new ImageView(Resource.background_red_win);
 	}
 
 	private void playAgain() {

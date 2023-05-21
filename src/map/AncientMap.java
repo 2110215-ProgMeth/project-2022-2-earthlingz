@@ -2,9 +2,9 @@ package map;
 
 import utils.Resource;
 
-public class SnowMap extends GameMap {
+public class AncientMap extends GameMap {
 
-	public SnowMap() {
+	public AncientMap() {
 		this.mapSheet = new int[][] {
 				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						0, 0, 0, 0, 0, 0, 0 },
@@ -60,14 +60,14 @@ public class SnowMap extends GameMap {
 						1, 1, 1, 1, 1, 1, 1 }, };
 
 		this.backgroundImage = Resource.background_ancient;
-		this.floorBoxImage = Resource.floor_snow;
+		this.floorBoxImage = Resource.floor_ancient;
 		this.battleTheme = Resource.music_battle_ancient;
 	}
 
-	public SnowMap(int[][] mapSheet) {
+	public AncientMap(int[][] mapSheet) {
 		this.mapSheet = mapSheet;
-		this.backgroundImage = Resource.background_space;
-		this.floorBoxImage = Resource.floor_snow;
+		this.backgroundImage = Resource.background_ancient;
+		this.floorBoxImage = Resource.floor_ancient;
 	}
 
 }

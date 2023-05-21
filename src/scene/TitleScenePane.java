@@ -8,9 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import render.RenderableManager;
 import utils.Resource;
@@ -52,8 +49,7 @@ public class TitleScenePane extends ScenePane {
 		this.gameTitleText.setFill(Color.valueOf(Config.gameTitleTextColor));
 		this.gameTitleText.setStrokeWidth(8);
 		this.gameTitleText.setStroke(Color.BLACK);
-		this.gameTitleText
-				.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.gameTitleTextSize));
+		this.gameTitleText.setFont(Resource.getFont(Resource.font_normal, Config.gameTitleTextSize));
 	}
 
 	private void initializeStartButton() {
