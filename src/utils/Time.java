@@ -9,9 +9,9 @@ public class Time {
 	public static long getCurrentTime() {
 		return Time.currentTime;
 	}
-	
+
 	public static double getCurrentTimeSecond() {
-		return Time.currentTime/100000000D;
+		return Time.currentTime / 100000000D;
 	}
 
 	public static void setCurrentTime(long newTime) {
@@ -22,9 +22,9 @@ public class Time {
 	public static long getDeltaTime() {
 		return Time.deltaTime;
 	}
-	
+
 	public static double getDeltaTimeSecond() {
-		return Time.deltaTime/100000000D;
+		return Time.deltaTime / 100000000D;
 	}
 
 	public static void setStartTime(long startTime) {

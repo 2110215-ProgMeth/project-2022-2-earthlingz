@@ -12,8 +12,6 @@ public class Resource {
 	public static AudioClip music_title;
 
 	// Gameplay Scene
-	public static AudioClip sound_normalRocketExplosion;
-
 	public static Image background_space;
 	public static Image background_ruin;
 	public static Image background_ancient;
@@ -28,7 +26,7 @@ public class Resource {
 	public static Image earthling_dead_red;
 	public static Image earthling_idle_green;
 	public static Image earthling_dead_green;
-	public static Media  sound_earthlingCharge;
+	public static Media sound_earthlingCharge;
 	public static AudioClip sound_earthlingHurt;
 	public static AudioClip sound_earthlingDead;
 
@@ -77,19 +75,19 @@ public class Resource {
 		sprite_rocket_normal = new Image(ClassLoader.getSystemResource("entity/rocket_normal.png").toString());
 		sprite_rocket_vertical = new Image(ClassLoader.getSystemResource("entity/rocket_vertical.png").toString());
 		sprite_rocket_push = new Image(ClassLoader.getSystemResource("entity/rocket_push.png").toString());
-		sound_explosionNormal= new AudioClip(ClassLoader.getSystemResource("sound/explosion_normal.wav").toString());
-		sound_explosionVertical= new AudioClip(ClassLoader.getSystemResource("sound/explosion_vertical.wav").toString());
-		sound_explosionPush= new AudioClip(ClassLoader.getSystemResource("sound/explosion_push.wav").toString());
+		sound_explosionNormal = new AudioClip(ClassLoader.getSystemResource("sound/explosion_normal.wav").toString());
+		sound_explosionVertical = new AudioClip(ClassLoader.getSystemResource("sound/explosion_vertical.wav").toString());
+		sound_explosionPush = new AudioClip(ClassLoader.getSystemResource("sound/explosion_push.wav").toString());
 
 		explosionArea_circle = new Image(ClassLoader.getSystemResource("entity/redcircle.png").toString());
 		explosionArea_rectangle = new Image(ClassLoader.getSystemResource("entity/redrectangle.png").toString());
 	}
-	
+
 	public static void playSound(AudioClip sound) {
 		sound.setVolume(Config.soundEffectVolumeLevel);
 		sound.play();
 	}
-	
+
 	public static void playSoundLoop(AudioClip sound) {
 		sound.setVolume(Config.musicVolumeLevel);
 		sound.setCycleCount(AudioClip.INDEFINITE);

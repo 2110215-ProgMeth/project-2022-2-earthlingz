@@ -1,6 +1,5 @@
 package utils;
 
-import javafx.scene.paint.Color;
 import logic.BoxCollider2D;
 import logic.CircleCollider2D;
 import logic.Collider2D;
@@ -64,15 +63,15 @@ public class LogicUtility {
 			return new Vector2D();
 		}
 	}
-	
+
 	public static String getTeamName(int teamIndex) {
 		switch (teamIndex) {
 		case 0:
-			return "GREEN";	
+			return "GREEN";
 		case 1:
-			return "RED";	
+			return "RED";
 		case 2:
-			return "BLUE";	
+			return "BLUE";
 		default:
 			return "GREEN";
 		}

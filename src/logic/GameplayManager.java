@@ -13,15 +13,11 @@ import gameObject.GameObject;
 import gameObject.PhysicsObject;
 import input.InputManager;
 import javafx.application.Platform;
-import javafx.scene.input.KeyCode;
 import javafx.scene.media.AudioClip;
 import map.GameMap;
 import render.RenderableManager;
 import rocket.ExplosionArea;
-import rocket.NormalRocket;
-import rocket.PushRocket;
 import rocket.Rocket;
-import rocket.VerticalRocket;
 import scene.GameplayScenePane;
 import utils.LogicUtility;
 import utils.Resource;
@@ -30,37 +26,39 @@ import utils.Vector2D;
 public class GameplayManager {
 
 	private static GameplayManager instance = null;
-	private GameplayScenePane scene;
+	private GameplayScenePane currentGameplayScene;
 	private List<GameObject> gameObjectContainer;
 	private List<PhysicsObject> physicsObjectContainer;
 
 	private boolean isPause;
 	private boolean isGameEnd;
 
-	private int teamCount;
+	private int teamAmount;
 	private int currentTeam;
 	private int currentTurn;
-	private boolean endTurn;
+	private boolean isTurnEnded;
+
 	private List<ArrayList<Earthling>> teamMembersContainer;
 	private List<Integer> lastPlayerIndexes;
 	private Earthling currentPlayer;
-	private AudioClip battleTheme;
+
 	private List<ArrayList<Integer>> rocketAmountList;
 	private int currentRocketIndex;
 	private int currentRocketAmount;
 	private boolean isSelectingNormalRocket;
-	private boolean isPressingKey;
 
-	public GameplayManager(GameplayScenePane scene) {
-		this.scene = scene;
+	private AudioClip battleTheme;
+
+	public GameplayManager(GameplayScenePane currentGameplayScene) {
+		this.currentGameplayScene = currentGameplayScene;
 		this.gameObjectContainer = new ArrayList<GameObject>();
 		this.physicsObjectContainer = new ArrayList<PhysicsObject>();
 
 		this.initializeGameplay();
 	}
 
-	public static void initializeGameplayManager(GameplayScenePane scene) {
-		GameplayManager.instance = new GameplayManager(scene);
+	public static void initializeGameplayManager(GameplayScenePane currentGameplayScene) {
+		GameplayManager.instance = new GameplayManager(currentGameplayScene);
 	}
 
 	public static GameplayManager getInstance() {
@@ -68,13 +66,13 @@ public class GameplayManager {
 	}
 
 	private void initializeGameplay() {
-		this.currentTurn = 0;
-		this.teamCount = Config.teamAmount;
+		this.teamAmount = Config.teamAmount;
 		this.currentTeam = 0;
+		this.currentTurn = 0;
 
 		this.teamMembersContainer = new ArrayList<ArrayList<Earthling>>();
 		this.lastPlayerIndexes = new ArrayList<Integer>();
-		for (int i = 0; i < teamCount; i++) {
+		for (int i = 0; i < teamAmount; i++) {
 			this.teamMembersContainer.add(new ArrayList<Earthling>());
 			this.lastPlayerIndexes.add(0);
 		}
@@ -82,7 +80,7 @@ public class GameplayManager {
 		this.initializeMap(Config.selectedMap);
 
 		this.rocketAmountList = new ArrayList<ArrayList<Integer>>();
-		for (int i = 0; i < teamCount; i++) {
+		for (int i = 0; i < teamAmount; i++) {
 			this.rocketAmountList.add(new ArrayList<Integer>(
 					Arrays.asList(new Integer[] { Config.verticalRocketAmount, Config.pushRocketAmount })));
 		}
@@ -91,7 +89,6 @@ public class GameplayManager {
 		this.isSelectingNormalRocket = true;
 
 		this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(0));
-
 	}
 
 	private void initializeMap(GameMap map) {
@@ -99,25 +96,23 @@ public class GameplayManager {
 		for (int y = 0; y < GameMap.mapRow; y++) {
 			for (int x = 0; x < GameMap.mapCol; x++) {
 				if (map.getObject(x, y) == 1) {
-					this.addNewObject(new FloorBox(new Vector2D(x * 32, y * 32), map.getFloorBoxImage()));
+					this.addNewObject(new FloorBox(new Vector2D(x * Config.floorBoxWidth, y * Config.floorBoxHeight),
+							map.getFloorBoxImage()));
 				}
 				if (map.getObject(x, y) == 2) {
-					String name = LogicUtility.getTeamName(this.currentTeam) + " Earthling "
+					String earthlingName = LogicUtility.getTeamName(this.currentTeam) + " Earthling "
 							+ this.teamMembersContainer.get(this.currentTeam).size();
-					Earthling earthling = new Earthling(new Vector2D(x * 32, y * 32), this.currentTeam, false, name);
+					Earthling earthling = new Earthling(
+							new Vector2D(x * Config.floorBoxWidth, y * Config.floorBoxHeight), this.currentTeam, false,
+							earthlingName);
 					this.addNewObject(earthling);
 					this.teamMembersContainer.get(this.currentTeam).add(earthling);
-					this.currentTeam = (currentTeam + 1) % teamCount;
+					this.currentTeam = (currentTeam + 1) % teamAmount;
 				}
 			}
 		}
 		this.battleTheme = map.getBattleTheme();
 		Resource.playSoundLoop(this.battleTheme);
-	}
-
-	private void setCurrentPlayer(Earthling earthling) {
-		earthling.setPlayer(true);
-		this.currentPlayer = earthling;
 	}
 
 	public void addNewObject(GameObject gameObject) {
@@ -137,12 +132,14 @@ public class GameplayManager {
 			return;
 		}
 
+		// Update turn and Check end game
 		this.processTurn();
 
 		if (InputManager.isRightClickTriggered() && !this.isGameEnd) {
 			this.changeRocket();
 		}
-		
+
+		// Update Physics Objects
 		for (PhysicsObject physicsObject : this.physicsObjectContainer) {
 			this.processState(physicsObject);
 			this.processCollision(physicsObject);
@@ -151,18 +148,83 @@ public class GameplayManager {
 			}
 		}
 
+		// Destroy Game Objects and Remove Destroyed Game Objects
 		for (GameObject gameObject : this.gameObjectContainer) {
 			this.processOutOfBound(gameObject);
 		}
 		this.updateContainer();
 	}
 
+	private void processTurn() {
+		if (this.isGameEnd) {
+			return;
+		}
+		if (this.isTurnEnded || this.currentPlayer.isDestroyed()) {
+			this.switchTurn();
+		}
+		int remainingTeamCount = 0;
+		for (ArrayList<Earthling> team : this.teamMembersContainer) {
+			if (team.size() > 0) {
+				remainingTeamCount += 1;
+			}
+		}
+		if (remainingTeamCount <= 1) {
+			this.endGame();
+		}
+	}
+
+	private void switchTurn() {
+		this.currentPlayer.setPlayer(false);
+		this.lastPlayerIndexes.set(this.currentTeam, this.lastPlayerIndexes.get(this.currentTeam) + 1);
+		// Find next team that still has team members
+		do {
+			this.currentTeam = (currentTeam + 1) % teamAmount;
+		} while (this.teamMembersContainer.get(this.currentTeam).size() == 0);
+		// Find next player of next team
+		int newPlayerIndex = this.lastPlayerIndexes.get(currentTeam);
+		if (newPlayerIndex >= this.teamMembersContainer.get(this.currentTeam).size()) {
+			newPlayerIndex = 0;
+			this.lastPlayerIndexes.set(this.currentTeam, 0);
+		}
+		this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(newPlayerIndex));
+
+		// Select last selected Rocket of Earthling
+		switch (this.currentPlayer.getRocketType()) {
+		case NormalRocket:
+			this.currentRocketIndex = 0;
+			this.currentRocketAmount = 99;
+			this.isSelectingNormalRocket = true;
+			break;
+		case VerticalRocket:
+			this.currentRocketIndex = 1;
+			this.currentRocketAmount = this.rocketAmountList.get(this.currentTeam).get(0);
+			this.isSelectingNormalRocket = false;
+			break;
+		case PushRocket:
+			this.currentRocketIndex = 2;
+			this.currentRocketAmount = this.rocketAmountList.get(this.currentTeam).get(1);
+			this.isSelectingNormalRocket = false;
+			break;
+		default:
+			this.currentRocketIndex = 0;
+			this.currentRocketAmount = 99;
+			this.isSelectingNormalRocket = true;
+			break;
+		}
+		if (this.currentRocketAmount <= 0) {
+			this.changeRocket();
+		}
+
+		// Finish switch turn
+		this.currentTurn++;
+		this.isTurnEnded = false;
+	}
+
 	private void changeRocket() {
 		List<Integer> currentTeamList = this.rocketAmountList.get(this.currentTeam);
-		System.out.println(currentTeamList);
+		// Find next rocket type that is still left
 		do {
 			this.currentRocketIndex = (this.currentRocketIndex + 1) % 3;
-			System.out.println(this.currentRocketIndex);
 		} while (this.currentRocketIndex != 0 && currentTeamList.get(this.currentRocketIndex - 1) == 0);
 		switch (this.currentRocketIndex) {
 		case 0:
@@ -188,94 +250,11 @@ public class GameplayManager {
 		}
 	}
 
-	private void processTurn() {
-		if (this.isGameEnd) {
-			return;
-		}
-		if (this.endTurn || this.currentPlayer.isDestroyed()) {
-			this.switchTurn();
-		}
-		int remainingTeamCount = 0;
-		for (ArrayList<Earthling> team : this.teamMembersContainer) {
-			if (team.size() > 0) {
-				remainingTeamCount += 1;
-			}
-		}
-		if (remainingTeamCount <= 1) {
-			this.endGame();
-		}
-
-	}
-
-	private void switchTurn() {
-		this.currentPlayer.setPlayer(false);
-		this.lastPlayerIndexes.set(this.currentTeam, this.lastPlayerIndexes.get(this.currentTeam) + 1);
-		do {
-			this.currentTeam = (currentTeam + 1) % teamCount;
-		} while (this.teamMembersContainer.get(this.currentTeam).size() == 0);
-		int newPlayerIndex = this.lastPlayerIndexes.get(currentTeam);
-		if (newPlayerIndex >= this.teamMembersContainer.get(this.currentTeam).size()) {
-			newPlayerIndex = 0;
-			this.lastPlayerIndexes.set(this.currentTeam, 0);
-		}
-		this.setCurrentPlayer(this.teamMembersContainer.get(this.currentTeam).get(newPlayerIndex));
-		
-		switch (this.currentPlayer.getRocketType()) {
-		case NormalRocket:
-			this.currentRocketAmount = 99;
-			this.isSelectingNormalRocket = true;
-			break;
-		case VerticalRocket:
-			this.currentRocketAmount = this.rocketAmountList.get(this.currentTeam).get(0);
-			this.isSelectingNormalRocket = false;
-			break;
-		case PushRocket:
-			this.currentRocketAmount = this.rocketAmountList.get(this.currentTeam).get(1);
-			this.isSelectingNormalRocket = false;
-			break;
-		default:
-			this.currentRocketAmount = 99;
-			this.isSelectingNormalRocket = true;
-			break;
-		}
-		
-		this.currentTurn++;
-		this.endTurn = false;
-	}
-
-	public void onPlayerShootRocket(RocketType rocketType) {
-		List<Integer> currentTeamList = this.rocketAmountList.get(this.currentTeam);
-		if(rocketType != RocketType.NormalRocket){
-			currentTeamList.set(this.currentRocketIndex-1, currentTeamList.get(this.currentRocketIndex-1)-1);
-			if(currentTeamList.get(this.currentRocketIndex-1) == 0) {
-				this.changeRocket();
-			}
-		}
-		this.endTurn();
-	}
-
-	private void endTurn() {
-		this.endTurn = true;
-	}
-
-	private void endGame() {
-		this.isGameEnd = true;
-		this.battleTheme.stop();
-		this.scene.endGame();
-		for (ArrayList<Earthling> team : this.teamMembersContainer) {
-			for (Earthling earthling : team) {
-				earthling.setPlayer(false);
-				earthling.getChargeSound().stop();
-			}
-		}
-	}
-
 	private void processState(PhysicsObject physicsObject) {
 		if (physicsObject instanceof Earthling) {
 			Earthling earthling = (Earthling) physicsObject;
 			earthling.updateState();
 		}
-
 		if (physicsObject instanceof ExplosionArea) {
 			ExplosionArea explosion = (ExplosionArea) physicsObject;
 			explosion.updateState();
@@ -312,9 +291,9 @@ public class GameplayManager {
 			}
 
 			if (physicsObject instanceof ExplosionArea) {
-				ExplosionArea explosion = (ExplosionArea) physicsObject;
+				ExplosionArea explosionArea = (ExplosionArea) physicsObject;
 				if (physicsObject.getCollider().collideWith(other.getCollider())) {
-					explosion.explode(other);
+					explosionArea.explode(other);
 				}
 			}
 		}
@@ -326,6 +305,7 @@ public class GameplayManager {
 		physicsObject.decayVelocity();
 		physicsObject.getVelocity().add(physicsObject.calculateDeltaVelocity());
 		physicsObject.translate(physicsObject.calculateDeltaPosition());
+		// Normalize Earthling Position
 		if (physicsObject instanceof Earthling) {
 			for (PhysicsObject other : this.physicsObjectContainer) {
 				if (physicsObject == other) {
@@ -367,6 +347,38 @@ public class GameplayManager {
 				if (earthling.isDestroyed()) {
 					Platform.runLater(() -> team.remove(earthling));
 				}
+			}
+		}
+	}
+
+	private void setCurrentPlayer(Earthling earthling) {
+		earthling.setPlayer(true);
+		this.currentPlayer = earthling;
+	}
+
+	public void onPlayerShootRocket(RocketType rocketType) {
+		List<Integer> currentTeamList = this.rocketAmountList.get(this.currentTeam);
+		if (rocketType != RocketType.NormalRocket) {
+			currentTeamList.set(this.currentRocketIndex - 1, currentTeamList.get(this.currentRocketIndex - 1) - 1);
+			if (currentTeamList.get(this.currentRocketIndex - 1) == 0) {
+				this.changeRocket();
+			}
+		}
+		this.endTurn();
+	}
+
+	private void endTurn() {
+		this.isTurnEnded = true;
+	}
+
+	private void endGame() {
+		this.isGameEnd = true;
+		this.battleTheme.stop();
+		this.currentGameplayScene.endGame();
+		for (ArrayList<Earthling> team : this.teamMembersContainer) {
+			for (Earthling earthling : team) {
+				earthling.setPlayer(false);
+				earthling.getRocketChargeSound().stop();
 			}
 		}
 	}

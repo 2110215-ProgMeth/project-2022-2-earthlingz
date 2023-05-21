@@ -14,7 +14,7 @@ public class Corpse extends PhysicsObject {
 
 	public Corpse(Earthling earthling,Image sprite) {
 		super(earthling.getCollider(), earthling.getPosition());
-		this.z = 10;
+		this.z = 20;
 		this.width = Config.earthlingWidth;
 		this.height = Config.earthlingHeight;
 		this.sprite = sprite;

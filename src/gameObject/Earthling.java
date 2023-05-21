@@ -29,34 +29,58 @@ public class Earthling extends PhysicsObject {
 		NormalRocket, VerticalRocket, PushRocket
 	}
 
+	private boolean isPlayer;
 	private int team;
-	private Image sprite_idle;
-	private Image sprite_dead;
 	private String name;
 	private int health;
-	private boolean isPlayer;
+	private RocketType rocketType;
+
 	private double width;
 	private double height;
 	private BoxCollider2D groundCollider;
+
 	private double speed;
 	private double jumpPower;
 	private double maxFirePower;
+
 	private boolean isCharging;
 	private double currentChargeRate;
 	private double chargeDuration;
-	private RocketType rocketType;
-	private MediaPlayer chargeSound;
 	private boolean isFacingRight;
 	private boolean isWalking;
 	private boolean isJumping;
+
+	private Image sprite_idle;
+	private Image sprite_dead;
+	private MediaPlayer rocketChargeSound;
 
 	public Earthling(Vector2D position, int team, boolean isPlayer) {
 		super(new BoxCollider2D(position, Config.earthlingHitboxWidth, Config.earthlingHitboxHeight), position,
 				Config.earthlingMass);
 		this.z = 10;
-		this.name = "Earthling";
-		this.health = 100;
+		this.isPlayer = isPlayer;
 		this.team = team;
+		this.name = "Earthling";
+		this.health = Config.earthlingHealth;
+		this.rocketType = RocketType.NormalRocket;
+
+		this.width = Config.earthlingWidth;
+		this.height = Config.earthlingHeight;
+		this.groundCollider = new BoxCollider2D(
+				Vector2D.add(this.position, new Vector2D(0, Config.earthlingHeight / 2)),
+				Config.earthlingHitboxWidth - 2, 1);
+
+		this.speed = Config.earthlingSpeed;
+		this.jumpPower = Config.earthlingJumpPower;
+		this.maxFirePower = Config.earthlingMaxFirePower;
+
+		this.isCharging = false;
+		this.currentChargeRate = 0;
+		this.chargeDuration = 0;
+		this.isFacingRight = true;
+		this.isWalking = false;
+		this.isJumping = false;
+
 		if (team == 0) {
 			this.sprite_idle = Resource.earthling_idle_green;
 			this.sprite_dead = Resource.earthling_dead_green;
@@ -64,19 +88,8 @@ public class Earthling extends PhysicsObject {
 			this.sprite_idle = Resource.earthling_idle_red;
 			this.sprite_dead = Resource.earthling_dead_red;
 		}
-		this.isPlayer = isPlayer;
-		this.width = Config.earthlingWidth;
-		this.height = Config.earthlingHeight;
-		this.groundCollider = new BoxCollider2D(
-				Vector2D.add(this.position, new Vector2D(0, Config.earthlingHeight / 2)),
-				Config.earthlingHitboxWidth - 2, 1);
-		this.speed = Config.earthlingSpeed;
-		this.jumpPower = Config.earthlingJumpPower;
-		this.maxFirePower = Config.earthlingMaxFirePower;
-		this.rocketType = RocketType.NormalRocket;
-		this.chargeSound = new MediaPlayer(Resource.sound_earthlingCharge);
-		this.isFacingRight = true;
-		this.isJumping = false;
+
+		this.rocketChargeSound = new MediaPlayer(Resource.sound_earthlingCharge);
 	}
 
 	public Earthling(Vector2D position, int team, boolean isPlayer, String name) {
@@ -84,9 +97,10 @@ public class Earthling extends PhysicsObject {
 		this.name = name;
 	}
 
-	public Earthling(Vector2D position, int team, boolean isPlayer, String name, double mass, double speed,
+	public Earthling(Vector2D position, int team, boolean isPlayer, String name, int health, double mass, double speed,
 			double jumpPower, double maxFirePower) {
 		this(position, team, isPlayer, name);
+		this.health = health;
 		this.mass = mass;
 		this.speed = speed;
 		this.jumpPower = jumpPower;
@@ -102,54 +116,57 @@ public class Earthling extends PhysicsObject {
 
 	@Override
 	public void render(GraphicsContext gc) {
-		int direction = (this.isFacingRight ? -1 : 1);
-
 		gc.translate(this.position.getX(), this.position.getY());
 
+		int direction = (this.isFacingRight ? -1 : 1);
 		gc.drawImage(this.sprite_idle, direction * this.width / 2, -this.height / 2, -direction * this.width,
 				this.height);
 
-		// Calculate the angle between the object and the mouse position
+		// Draw Bazooka
 		if (this.isPlayer) {
 			double bazookaWidth = Config.bazookaWidth;
 			double bazookaHeight = Config.bazookaHeight;
 
+			// Calculate the angle between the object and the mouse position
 			double angle = Math.atan2(InputManager.mouseY - this.position.getY(),
 					InputManager.mouseX - this.position.getX());
+
 			gc.rotate(Math.toDegrees(angle));
 			gc.drawImage(Resource.sprite_bazooka, -bazookaWidth / 2, -bazookaHeight / 2, bazookaWidth, bazookaHeight);
 
 			gc.rotate(-Math.toDegrees(angle));
 		}
-		
+
 		// Draw HP
-        gc.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.earthlingHpTextSize));
-        gc.setTextAlign(TextAlignment.CENTER);
-        switch(this.team) {
+		gc.setFont(Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.earthlingHpTextSize));
+		gc.setTextAlign(TextAlignment.CENTER);
+		switch (this.team) {
 		case 0:
-	        gc.setFill(Color.GREEN);
-	        gc.fillText(this.health+"", 0,-this.height+10);
+			gc.setFill(Color.GREEN);
+			gc.fillText(this.health + "", 0, -this.height + 10);
 			break;
 		case 1:
-	        gc.setFill(Color.RED);
-	        gc.fillText(this.health+"", 0,-this.height+10);
+			gc.setFill(Color.RED);
+			gc.fillText(this.health + "", 0, -this.height + 10);
 			break;
 		default:
-	        gc.setFill(Color.GREEN);
-	        gc.fillText(this.health+"", 0,-this.height+10);
+			gc.setFill(Color.GREEN);
+			gc.fillText(this.health + "", 0, -this.height + 10);
 			break;
-        }
+		}
 
 		gc.translate(-this.position.getX(), -this.position.getY());
-
 	}
 
 	public void shootRocket(double power) {
+		// Get pointing direction
 		Vector2D mousePosition = new Vector2D(InputManager.mouseX, InputManager.mouseY);
 		Vector2D pointingDirection = new Vector2D(this.getPosition(), mousePosition).getDirectionalVector();
+		// Calculate where Rocket will be spawned
 		BoxCollider2D box = (BoxCollider2D) this.collider;
 		Vector2D startPosition = Vector2D.add(this.getPosition(),
 				Vector2D.multiply(pointingDirection, new Vector2D(box.getWidth(), box.getHeight()).getSize()));
+		// Create Rocket
 		Vector2D rocketVelocity = Vector2D.multiply(pointingDirection, power);
 		Rocket rocket;
 		switch (this.rocketType) {
@@ -184,13 +201,15 @@ public class Earthling extends PhysicsObject {
 		super.destroy();
 		Platform.runLater(() -> GameplayManager.getInstance().addNewObject(new Corpse(this, this.sprite_dead)));
 		Resource.playSound(Resource.sound_earthlingDead);
-		this.chargeSound.stop();
+		this.rocketChargeSound.stop();
 	}
 
 	public void updateState() {
 		if (this.isPlayer) {
+			// Reset walking state
 			this.velocity.setX(0);
 			this.isWalking = false;
+			// Check walking input
 			if (InputManager.getKeyPressed(KeyCode.A)) {
 				this.velocity.setX(-speed);
 				this.isWalking = true;
@@ -200,40 +219,46 @@ public class Earthling extends PhysicsObject {
 				this.isWalking = true;
 				this.isFacingRight = true;
 			}
+			// Check jumping input
 			if (InputManager.getKeyPressed(KeyCode.SPACE)) {
 				if (this.isGrounded && !this.isJumping) {
 					this.velocity.setY(-jumpPower);
 					this.isJumping = true;
 				}
 			}
+			// Reset grounded state
 			this.isGrounded = false;
+			// Check charging
 			if (InputManager.isLeftClickTriggered()) {
 				this.chargeDuration = 0;
 				this.isCharging = true;
-				this.chargeSound.setRate(0.6);
-				this.chargeSound.play();
-				this.chargeSound.setOnEndOfMedia(() -> {
-					this.chargeSound.seek(Duration.ZERO);
-					this.chargeSound.setRate(this.currentChargeRate / 100 * 1.2 + 0.6);
+				// Create dynamic sound
+				this.rocketChargeSound.setRate(0.6);
+				this.rocketChargeSound.play();
+				this.rocketChargeSound.setOnEndOfMedia(() -> {
+					this.rocketChargeSound.seek(Duration.ZERO);
+					this.rocketChargeSound.setRate(this.currentChargeRate / 100 * 1.2 + 0.6);
 				});
 			}
 			if (this.isCharging) {
 				this.chargeDuration += Time.getDeltaTimeSecond();
 				if (InputManager.isMouseLeftDown()) {
+					// Still Charging
 					this.currentChargeRate = (Math.abs(Math.sin(this.chargeDuration / (4 * Math.PI))) * 90 + 10);
-				} else if (this.chargeDuration > 0.5) {
-					this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
-					this.isCharging = false;
-					this.currentChargeRate = 0;
-					this.chargeSound.stop();
 				} else {
+					// Stopped Charging
+					if (this.chargeDuration > 0.5) {
+						this.shootRocket(currentChargeRate / 100 * this.maxFirePower);
+					}
 					this.isCharging = false;
 					this.currentChargeRate = 0;
-					this.chargeSound.stop();
+					this.rocketChargeSound.stop();
 				}
 			}
 		} else {
+			// Reset states
 			this.velocity.setX(0);
+			this.isWalking = false;
 			this.isGrounded = false;
 		}
 
@@ -253,12 +278,12 @@ public class Earthling extends PhysicsObject {
 		this.translate(new Vector2D(this.position, position));
 	}
 
-	public int getTeam() {
-		return team;
+	public boolean isPlayer() {
+		return isPlayer;
 	}
 
-	public void setTeam(int team) {
-		this.team = team;
+	public void setPlayer(boolean isPlayer) {
+		this.isPlayer = isPlayer;
 	}
 
 	public String getName() {
@@ -273,48 +298,8 @@ public class Earthling extends PhysicsObject {
 		return health;
 	}
 
-	public void setHealth(int health) {
-		this.health = health;
-	}
-
-	public boolean isPlayer() {
-		return isPlayer;
-	}
-
-	public void setPlayer(boolean isPlayer) {
-		this.isPlayer = isPlayer;
-	}
-
 	public BoxCollider2D getGroundCollider() {
 		return groundCollider;
-	}
-
-	public void setGroundCollider(BoxCollider2D groundCollider) {
-		this.groundCollider = groundCollider;
-	}
-
-	public double getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(double speed) {
-		this.speed = speed;
-	}
-
-	public double getJumpPower() {
-		return jumpPower;
-	}
-
-	public void setJumpPower(double jumpPower) {
-		this.jumpPower = jumpPower;
-	}
-
-	public double getMaxFirePower() {
-		return maxFirePower;
-	}
-
-	public void setMaxFirePower(double maxFirePower) {
-		this.maxFirePower = maxFirePower;
 	}
 
 	public RocketType getRocketType() {
@@ -329,15 +314,15 @@ public class Earthling extends PhysicsObject {
 		return currentChargeRate;
 	}
 
-	public MediaPlayer getChargeSound() {
-		return chargeSound;
+	public boolean isWalking() {
+		return isWalking;
 	}
 
 	public boolean isFacingRight() {
 		return isFacingRight;
 	}
 
-	public void setFacingRight(boolean isFacingRight) {
-		this.isFacingRight = isFacingRight;
+	public MediaPlayer getRocketChargeSound() {
+		return rocketChargeSound;
 	}
 }

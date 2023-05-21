@@ -15,7 +15,7 @@ public class FloorBox extends PhysicsObject {
 
 	public FloorBox(Vector2D position, Image texture) {
 		super(new BoxCollider2D(position, Config.floorBoxWidth, Config.floorBoxHeight), position);
-		this.z = -5;
+		this.z = 5;
 		this.width = Config.floorBoxWidth;
 		this.height = Config.floorBoxHeight;
 		this.isKinematic = false;

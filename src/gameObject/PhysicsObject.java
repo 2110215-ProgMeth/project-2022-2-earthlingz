@@ -17,11 +17,12 @@ public abstract class PhysicsObject extends GameObject {
 	public PhysicsObject(Collider2D collider) {
 		super();
 		this.collider = collider;
+		this.mass = 1;
 		this.velocity = new Vector2D();
 		this.decayableVelocity = new Vector2D();
 		this.acceleration = new Vector2D();
 		this.isKinematic = true;
-		this.mass = 1;
+		this.isGrounded = false;
 	}
 
 	public PhysicsObject(Collider2D collider, Vector2D position) {
@@ -130,10 +131,6 @@ public abstract class PhysicsObject extends GameObject {
 
 	public boolean isGrounded() {
 		return isGrounded;
-	}
-
-	public void setGrounded(boolean isGrounded) {
-		this.isGrounded = isGrounded;
 	}
 
 }

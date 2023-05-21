@@ -2,15 +2,11 @@ package scene;
 
 import config.Config;
 import gameObject.Earthling;
-import gui.ButtonTemplate;
 import gui.GameEndPane;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -18,10 +14,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import logic.GameplayManager;
-import render.RenderableManager;
-import rocket.NormalRocket;
-import rocket.PushRocket;
-import rocket.VerticalRocket;
 import utils.Resource;
 
 public class GameplayScenePane extends ScenePane {
@@ -39,7 +31,7 @@ public class GameplayScenePane extends ScenePane {
 	private VBox playerStatusPane;
 
 	private Text chargePercentText;
-	private VBox chargePane;
+	private VBox chargePercentPane;
 
 	private AnchorPane gameplayHUD;
 
@@ -47,6 +39,13 @@ public class GameplayScenePane extends ScenePane {
 		super(width, height);
 		GameplayManager.initializeGameplayManager(this);
 		this.initializeHUD();
+	}
+
+	@Override
+	public void updateScene() {
+		this.renderComponent();
+		this.updateHUD();
+		GameplayManager.getInstance().updateLogic();
 	}
 
 	private void initializeHUD() {
@@ -138,8 +137,8 @@ public class GameplayScenePane extends ScenePane {
 		this.currentRocketPane.setAlignment(Pos.TOP_RIGHT);
 		this.currentRocketPane.getChildren().addAll(rocketImageView, this.currentRocketAmountText);
 
-		this.chargePane = new VBox();
-		this.chargePane.setSpacing(vBoxSpacing);
+		this.chargePercentPane = new VBox();
+		this.chargePercentPane.setSpacing(vBoxSpacing);
 
 		Text chargeLabel = new Text("POWER");
 		chargeLabel.setFont(this.getFont(Config.chargeLabelTextSize));
@@ -149,8 +148,8 @@ public class GameplayScenePane extends ScenePane {
 		this.chargePercentText.setFont(this.getFont(Config.chargePercentTextSize));
 		this.chargePercentText.setFill(Color.AQUA);
 
-		this.chargePane.setAlignment(Pos.BOTTOM_RIGHT);
-		this.chargePane.getChildren().addAll(chargeLabel, this.chargePercentText);
+		this.chargePercentPane.setAlignment(Pos.BOTTOM_RIGHT);
+		this.chargePercentPane.getChildren().addAll(chargeLabel, this.chargePercentText);
 
 		this.gameplayHUD = new AnchorPane();
 
@@ -163,24 +162,12 @@ public class GameplayScenePane extends ScenePane {
 		AnchorPane.setTopAnchor(this.currentRocketPane, anchorPadding);
 		AnchorPane.setRightAnchor(this.currentRocketPane, anchorPadding);
 
-		AnchorPane.setBottomAnchor(this.chargePane, anchorPadding);
-		AnchorPane.setRightAnchor(this.chargePane, anchorPadding);
+		AnchorPane.setBottomAnchor(this.chargePercentPane, anchorPadding);
+		AnchorPane.setRightAnchor(this.chargePercentPane, anchorPadding);
 
 		this.gameplayHUD.getChildren().addAll(this.gameStatePane, this.playerStatusPane, this.currentRocketPane,
-				this.chargePane);
+				this.chargePercentPane);
 		this.getChildren().add(gameplayHUD);
-	}
-
-	public void endGame() {
-		System.out.println("GAMEPLAY END");
-		this.getChildren().add(new GameEndPane(this, GameplayManager.getInstance().getCurrentTeam()));
-	}
-
-	@Override
-	public void updateScene() {
-		this.renderComponent();
-		this.updateHUD();
-		GameplayManager.getInstance().updateLogic();
 	}
 
 	private void updateHUD() {
@@ -249,6 +236,11 @@ public class GameplayScenePane extends ScenePane {
 
 		this.chargePercentText.setText(((int) Math.ceil(player.getCurrentChargeRate())) + "%");
 
+	}
+
+	public void endGame() {
+		System.out.println("GAMEPLAY END");
+		this.getChildren().add(new GameEndPane(this, GameplayManager.getInstance().getCurrentTeam()));
 	}
 
 	private Font getFont(int fontSize) {

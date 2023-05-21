@@ -12,8 +12,8 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
 		System.out.println("APPLICATION START");
+		
 		SceneManager.initializeSceneManager(primaryStage);
 		Time.setStartTime(System.nanoTime());
 

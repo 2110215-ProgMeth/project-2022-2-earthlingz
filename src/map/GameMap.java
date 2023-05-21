@@ -5,8 +5,8 @@ import javafx.scene.media.AudioClip;
 
 public abstract class GameMap {
 
-	public static final int mapRow = 27;
-	public static final int mapCol = 42;
+	public static final int mapRow = 26;
+	public static final int mapCol = 41;
 	protected int[][] mapSheet;
 	protected Image backgroundImage;
 	protected Image floorBoxImage;

@@ -22,8 +22,8 @@ public class ExplosionArea extends PhysicsObject {
 	private int pushPower;
 	private boolean isDestructive;
 
-	public ExplosionArea(Collider2D collider, ExplosionType type, Vector2D position,boolean isDestructive, int explosionDamage,
-			int pushPower) {
+	public ExplosionArea(Collider2D collider, ExplosionType type, Vector2D position, boolean isDestructive,
+			int explosionDamage, int pushPower) {
 		super(collider, position);
 		this.z = 10;
 		this.isKinematic = false;
@@ -57,12 +57,13 @@ public class ExplosionArea extends PhysicsObject {
 		Vector2D center = this.getCollider().getCenter();
 		if (this.type == ExplosionType.Circle) {
 			CircleCollider2D circle = (CircleCollider2D) this.collider;
-			gc.drawImage(Resource.explosionArea_circle, center.getX() - circle.getRadius(), center.getY() - circle.getRadius(), circle.getRadius()*2, circle.getRadius()*2);
-		} else if(this.type == ExplosionType.Rectangle) {
-			BoxCollider2D box = (BoxCollider2D ) this.collider;
-			gc.drawImage(Resource.explosionArea_rectangle, center.getX() - box.getWidth() / 2, center.getY() - box.getHeight()/ 2, box.getWidth(), box.getHeight());
+			gc.drawImage(Resource.explosionArea_circle, center.getX() - circle.getRadius(),
+					center.getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
+		} else if (this.type == ExplosionType.Rectangle) {
+			BoxCollider2D box = (BoxCollider2D) this.collider;
+			gc.drawImage(Resource.explosionArea_rectangle, center.getX() - box.getWidth() / 2,
+					center.getY() - box.getHeight() / 2, box.getWidth(), box.getHeight());
 		}
-
 	}
 
 }

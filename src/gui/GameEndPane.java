@@ -50,6 +50,11 @@ public class GameEndPane extends VBox {
 			break;
 		}
 
+		this.winnerText.setFont(
+				Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.gameEndWinnerTextSize));
+		this.winnerText.setStrokeWidth(4);
+		this.winnerText.setStroke(Color.BLACK);
+
 		this.buttonPane = new VBox();
 		this.buttonPane.setSpacing(20);
 		this.buttonPane.setAlignment(Pos.CENTER);
@@ -71,20 +76,12 @@ public class GameEndPane extends VBox {
 		this.setBackground(new Background(new BackgroundFill(Color.MEDIUMSEAGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
 		this.winnerText = new Text("TEAM GREEN WIN!!!");
 		this.winnerText.setFill(Color.GREEN);
-		this.winnerText.setFont(
-				Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.gameEndWinnerTextSize));
-		this.winnerText.setStrokeWidth(4);
-		this.winnerText.setStroke(Color.BLACK);
 	}
 
 	private void initializeRedWinnerTeam() {
 		this.setBackground(new Background(new BackgroundFill(Color.LIGHTCORAL, CornerRadii.EMPTY, Insets.EMPTY)));
 		this.winnerText = new Text("TEAM RED WIN!!!");
 		this.winnerText.setFill(Color.RED);
-		this.winnerText.setFont(
-				Font.font("verdana", FontWeight.EXTRA_BOLD, FontPosture.REGULAR, Config.gameEndWinnerTextSize));
-		this.winnerText.setStrokeWidth(4);
-		this.winnerText.setStroke(Color.BLACK);
 	}
 
 	private void playAgain() {
